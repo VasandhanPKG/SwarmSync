@@ -1,0 +1,13 @@
+{
+  "name": "scale",
+  "description": "Fleet scaling evaluation across 3, 5, 10, and 20 drones",
+  "fleet_sizes": [3, 5, 10, 20],
+  "total_tasks": 16,
+  "comm_range": 500.0,
+  "packet_loss_prob": 0.04,
+  "min_delay": 0.02,
+  "max_delay": 0.12,
+  "dynamic_arrival": true,
+  "spawn_interval": 4.0,
+  "max_duration": 180.0
+}

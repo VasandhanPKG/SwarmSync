@@ -1,0 +1,15 @@
+{
+  "name": "hub_failure",
+  "description": "Centralized coordinator fails at t=18s while tasks continue arriving",
+  "fleet_size": 5,
+  "total_tasks": 12,
+  "comm_range": 520.0,
+  "packet_loss_prob": 0.02,
+  "min_delay": 0.0,
+  "max_delay": 0.10,
+  "hub_failure_at": 18.0,
+  "kill_drone_events": [{"time": 24.0}],
+  "dynamic_arrival": true,
+  "spawn_interval": 5.5,
+  "max_duration": 175.0
+}

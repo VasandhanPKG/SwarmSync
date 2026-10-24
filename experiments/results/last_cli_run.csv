@@ -1,0 +1,2 @@
+scenario,mode,seed,fleet_size,total_tasks,completed_tasks,delivery_success_rate,avg_delivery_time_s,deadline_success_rate,total_messages,total_bytes,messages_per_delivery,bytes_per_delivery,avg_recovery_time_s,duplicate_assignment_rate,energy_per_delivery_pct,safety_violations,reconciliations
+partition,swarmsync,1,5,12,12,1.0,40.542,1.0,844,696176,70.33,58014.7,0.0,0.03409,16.796,0,22

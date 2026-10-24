@@ -1,0 +1,6 @@
+{
+  "name": "SwarmSync — Decentralized Drone Logistics Simulator",
+  "description": "Simulation-first prototype of decentralized peer-to-peer multi-agent coordination, lease-based task allocation, partition reconciliation, and ROS 2 / PX4 SITL integration for autonomous drone logistics.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

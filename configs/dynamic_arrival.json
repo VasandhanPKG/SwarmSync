@@ -1,0 +1,13 @@
+{
+  "name": "dynamic_arrival",
+  "description": "Continuous dynamic task arrival across mission horizon",
+  "fleet_size": 5,
+  "total_tasks": 14,
+  "comm_range": 500.0,
+  "packet_loss_prob": 0.03,
+  "min_delay": 0.0,
+  "max_delay": 0.15,
+  "dynamic_arrival": true,
+  "spawn_interval": 6.0,
+  "max_duration": 180.0
+}

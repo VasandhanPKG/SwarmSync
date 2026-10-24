@@ -1,0 +1,12 @@
+{
+  "name": "packet_loss_delay",
+  "description": "25% packet loss probability and 0.25s-1.25s stochastic message delay",
+  "fleet_size": 5,
+  "total_tasks": 12,
+  "comm_range": 480.0,
+  "packet_loss_prob": 0.25,
+  "min_delay": 0.25,
+  "max_delay": 1.25,
+  "dynamic_arrival": false,
+  "max_duration": 170.0
+}

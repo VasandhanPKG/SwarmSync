@@ -1,0 +1,2933 @@
+{
+  "num_seeds": 10,
+  "scenarios": [
+    "normal",
+    "dynamic_arrival",
+    "packet_loss_delay",
+    "partition",
+    "drone_failure",
+    "hub_failure"
+  ],
+  "modes": [
+    "swarmsync",
+    "centralized",
+    "basic_auction",
+    "cbba"
+  ],
+  "fleet_scales": [
+    3,
+    5,
+    10,
+    20
+  ],
+  "scenario_summary": {
+    "normal": {
+      "swarmsync": {
+        "delivery_success_rate": {
+          "mean": 0.9917,
+          "std": 0.0263,
+          "ci95": 0.0188,
+          "min": 0.9167,
+          "max": 1.0
+        },
+        "avg_delivery_time_s": {
+          "mean": 60.1491,
+          "std": 4.7309,
+          "ci95": 3.3841,
+          "min": 53.083,
+          "max": 66.208
+        },
+        "deadline_success_rate": {
+          "mean": 0.9917,
+          "std": 0.0263,
+          "ci95": 0.0188,
+          "min": 0.9167,
+          "max": 1.0
+        },
+        "messages_per_delivery": {
+          "mean": 89.445,
+          "std": 11.4838,
+          "ci95": 8.2144,
+          "min": 74.67,
+          "max": 111.36
+        },
+        "bytes_per_delivery": {
+          "mean": 65347.54,
+          "std": 14839.6588,
+          "ci95": 10614.9149,
+          "min": 42979.7,
+          "max": 85936.1
+        },
+        "avg_recovery_time_s": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "duplicate_assignment_rate": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "energy_per_delivery_pct": {
+          "mean": 19.1088,
+          "std": 2.2265,
+          "ci95": 1.5927,
+          "min": 16.535,
+          "max": 23.396
+        },
+        "safety_violations": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "reconciliations": {
+          "mean": 1.9,
+          "std": 2.8067,
+          "ci95": 2.0077,
+          "min": 0.0,
+          "max": 9.0
+        }
+      },
+      "centralized": {
+        "delivery_success_rate": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "avg_delivery_time_s": {
+          "mean": 51.6791,
+          "std": 6.9639,
+          "ci95": 4.9813,
+          "min": 41.0,
+          "max": 64.708
+        },
+        "deadline_success_rate": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "messages_per_delivery": {
+          "mean": 45.9,
+          "std": 8.2858,
+          "ci95": 5.9269,
+          "min": 33.5,
+          "max": 60.25
+        },
+        "bytes_per_delivery": {
+          "mean": 6806.67,
+          "std": 1135.0085,
+          "ci95": 811.8798,
+          "min": 5084.8,
+          "max": 8714.3
+        },
+        "avg_recovery_time_s": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "duplicate_assignment_rate": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "energy_per_delivery_pct": {
+          "mean": 16.5371,
+          "std": 2.0069,
+          "ci95": 1.4355,
+          "min": 12.947,
+          "max": 19.226
+        },
+        "safety_violations": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "reconciliations": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        }
+      },
+      "basic_auction": {
+        "delivery_success_rate": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "avg_delivery_time_s": {
+          "mean": 53.7459,
+          "std": 5.3804,
+          "ci95": 3.8486,
+          "min": 44.0,
+          "max": 59.708
+        },
+        "deadline_success_rate": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "messages_per_delivery": {
+          "mean": 163.517,
+          "std": 17.6503,
+          "ci95": 12.6254,
+          "min": 133.0,
+          "max": 182.42
+        },
+        "bytes_per_delivery": {
+          "mean": 81542.51,
+          "std": 13262.8606,
+          "ci95": 9487.0198,
+          "min": 59206.5,
+          "max": 98775.0
+        },
+        "avg_recovery_time_s": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "duplicate_assignment_rate": {
+          "mean": 0.0081,
+          "std": 0.0066,
+          "ci95": 0.0047,
+          "min": 0.0,
+          "max": 0.0167
+        },
+        "energy_per_delivery_pct": {
+          "mean": 16.702,
+          "std": 1.3828,
+          "ci95": 0.9891,
+          "min": 13.821,
+          "max": 18.189
+        },
+        "safety_violations": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "reconciliations": {
+          "mean": 12.3,
+          "std": 6.5158,
+          "ci95": 4.6608,
+          "min": 4.0,
+          "max": 25.0
+        }
+      },
+      "cbba": {
+        "delivery_success_rate": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "avg_delivery_time_s": {
+          "mean": 59.3834,
+          "std": 6.2645,
+          "ci95": 4.481,
+          "min": 49.583,
+          "max": 69.042
+        },
+        "deadline_success_rate": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "messages_per_delivery": {
+          "mean": 82.892,
+          "std": 9.1491,
+          "ci95": 6.5444,
+          "min": 70.58,
+          "max": 96.83
+        },
+        "bytes_per_delivery": {
+          "mean": 62344.05,
+          "std": 13021.8704,
+          "ci95": 9314.6377,
+          "min": 37871.9,
+          "max": 83012.9
+        },
+        "avg_recovery_time_s": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "duplicate_assignment_rate": {
+          "mean": 0.0022,
+          "std": 0.0021,
+          "ci95": 0.0015,
+          "min": 0.0,
+          "max": 0.0054
+        },
+        "energy_per_delivery_pct": {
+          "mean": 18.6634,
+          "std": 1.8642,
+          "ci95": 1.3335,
+          "min": 14.893,
+          "max": 21.188
+        },
+        "safety_violations": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "reconciliations": {
+          "mean": 2.8,
+          "std": 3.3928,
+          "ci95": 2.4269,
+          "min": 0.0,
+          "max": 9.0
+        }
+      }
+    },
+    "dynamic_arrival": {
+      "swarmsync": {
+        "delivery_success_rate": {
+          "mean": 0.9857,
+          "std": 0.0301,
+          "ci95": 0.0215,
+          "min": 0.9286,
+          "max": 1.0
+        },
+        "avg_delivery_time_s": {
+          "mean": 49.3367,
+          "std": 8.9374,
+          "ci95": 6.393,
+          "min": 33.0,
+          "max": 59.071
+        },
+        "deadline_success_rate": {
+          "mean": 0.9857,
+          "std": 0.0301,
+          "ci95": 0.0215,
+          "min": 0.9286,
+          "max": 1.0
+        },
+        "messages_per_delivery": {
+          "mean": 92.31,
+          "std": 14.8647,
+          "ci95": 10.6328,
+          "min": 67.21,
+          "max": 115.31
+        },
+        "bytes_per_delivery": {
+          "mean": 71922.58,
+          "std": 17356.3457,
+          "ci95": 12415.1192,
+          "min": 48933.9,
+          "max": 96638.0
+        },
+        "avg_recovery_time_s": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "duplicate_assignment_rate": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "energy_per_delivery_pct": {
+          "mean": 19.6359,
+          "std": 3.3975,
+          "ci95": 2.4303,
+          "min": 14.572,
+          "max": 24.902
+        },
+        "safety_violations": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "reconciliations": {
+          "mean": 6.2,
+          "std": 4.1846,
+          "ci95": 2.9933,
+          "min": 0.0,
+          "max": 12.0
+        }
+      },
+      "centralized": {
+        "delivery_success_rate": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "avg_delivery_time_s": {
+          "mean": 38.7464,
+          "std": 7.4488,
+          "ci95": 5.3282,
+          "min": 26.143,
+          "max": 49.714
+        },
+        "deadline_success_rate": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "messages_per_delivery": {
+          "mean": 47.322,
+          "std": 4.7546,
+          "ci95": 3.401,
+          "min": 38.86,
+          "max": 54.07
+        },
+        "bytes_per_delivery": {
+          "mean": 6975.99,
+          "std": 659.8931,
+          "ci95": 472.0263,
+          "min": 5792.0,
+          "max": 7853.9
+        },
+        "avg_recovery_time_s": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "duplicate_assignment_rate": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "energy_per_delivery_pct": {
+          "mean": 16.8678,
+          "std": 1.6428,
+          "ci95": 1.1751,
+          "min": 13.552,
+          "max": 18.708
+        },
+        "safety_violations": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "reconciliations": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        }
+      },
+      "basic_auction": {
+        "delivery_success_rate": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "avg_delivery_time_s": {
+          "mean": 41.9893,
+          "std": 7.1974,
+          "ci95": 5.1483,
+          "min": 30.821,
+          "max": 52.5
+        },
+        "deadline_success_rate": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "messages_per_delivery": {
+          "mean": 99.315,
+          "std": 19.3181,
+          "ci95": 13.8184,
+          "min": 72.36,
+          "max": 124.14
+        },
+        "bytes_per_delivery": {
+          "mean": 54365.45,
+          "std": 11489.7348,
+          "ci95": 8218.6901,
+          "min": 40288.6,
+          "max": 76322.6
+        },
+        "avg_recovery_time_s": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "duplicate_assignment_rate": {
+          "mean": 0.0129,
+          "std": 0.0143,
+          "ci95": 0.0103,
+          "min": 0.0,
+          "max": 0.0474
+        },
+        "energy_per_delivery_pct": {
+          "mean": 17.3139,
+          "std": 1.6394,
+          "ci95": 1.1727,
+          "min": 14.792,
+          "max": 20.018
+        },
+        "safety_violations": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "reconciliations": {
+          "mean": 19.1,
+          "std": 6.4885,
+          "ci95": 4.6412,
+          "min": 9.0,
+          "max": 29.0
+        }
+      },
+      "cbba": {
+        "delivery_success_rate": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "avg_delivery_time_s": {
+          "mean": 49.2751,
+          "std": 9.1079,
+          "ci95": 6.5149,
+          "min": 33.786,
+          "max": 62.107
+        },
+        "deadline_success_rate": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "messages_per_delivery": {
+          "mean": 87.386,
+          "std": 12.7055,
+          "ci95": 9.0883,
+          "min": 64.36,
+          "max": 105.57
+        },
+        "bytes_per_delivery": {
+          "mean": 72475.99,
+          "std": 16483.3453,
+          "ci95": 11790.6557,
+          "min": 46936.7,
+          "max": 92239.7
+        },
+        "avg_recovery_time_s": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "duplicate_assignment_rate": {
+          "mean": 0.0028,
+          "std": 0.0053,
+          "ci95": 0.0038,
+          "min": 0.0,
+          "max": 0.0177
+        },
+        "energy_per_delivery_pct": {
+          "mean": 19.0828,
+          "std": 2.5044,
+          "ci95": 1.7914,
+          "min": 14.781,
+          "max": 22.28
+        },
+        "safety_violations": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "reconciliations": {
+          "mean": 4.2,
+          "std": 3.7947,
+          "ci95": 2.7144,
+          "min": 0.0,
+          "max": 12.0
+        }
+      }
+    },
+    "packet_loss_delay": {
+      "swarmsync": {
+        "delivery_success_rate": {
+          "mean": 0.9833,
+          "std": 0.0351,
+          "ci95": 0.0251,
+          "min": 0.9167,
+          "max": 1.0
+        },
+        "avg_delivery_time_s": {
+          "mean": 65.4659,
+          "std": 10.913,
+          "ci95": 7.8061,
+          "min": 51.583,
+          "max": 82.458
+        },
+        "deadline_success_rate": {
+          "mean": 0.9833,
+          "std": 0.0351,
+          "ci95": 0.0251,
+          "min": 0.9167,
+          "max": 1.0
+        },
+        "messages_per_delivery": {
+          "mean": 93.847,
+          "std": 16.5309,
+          "ci95": 11.8247,
+          "min": 69.08,
+          "max": 115.0
+        },
+        "bytes_per_delivery": {
+          "mean": 71449.29,
+          "std": 18401.9518,
+          "ci95": 13163.0487,
+          "min": 42778.0,
+          "max": 93573.8
+        },
+        "avg_recovery_time_s": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "duplicate_assignment_rate": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "energy_per_delivery_pct": {
+          "mean": 21.8154,
+          "std": 3.9539,
+          "ci95": 2.8283,
+          "min": 16.163,
+          "max": 27.705
+        },
+        "safety_violations": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "reconciliations": {
+          "mean": 20.8,
+          "std": 9.0529,
+          "ci95": 6.4756,
+          "min": 10.0,
+          "max": 39.0
+        }
+      },
+      "centralized": {
+        "delivery_success_rate": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "avg_delivery_time_s": {
+          "mean": 51.6834,
+          "std": 6.8789,
+          "ci95": 4.9206,
+          "min": 41.0,
+          "max": 64.708
+        },
+        "deadline_success_rate": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "messages_per_delivery": {
+          "mean": 45.508,
+          "std": 7.7943,
+          "ci95": 5.5754,
+          "min": 33.5,
+          "max": 59.92
+        },
+        "bytes_per_delivery": {
+          "mean": 6749.25,
+          "std": 1063.3468,
+          "ci95": 760.6196,
+          "min": 5084.8,
+          "max": 8666.0
+        },
+        "avg_recovery_time_s": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "duplicate_assignment_rate": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "energy_per_delivery_pct": {
+          "mean": 16.5527,
+          "std": 1.9292,
+          "ci95": 1.38,
+          "min": 12.947,
+          "max": 19.226
+        },
+        "safety_violations": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "reconciliations": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        }
+      },
+      "basic_auction": {
+        "delivery_success_rate": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "avg_delivery_time_s": {
+          "mean": 56.8625,
+          "std": 6.0755,
+          "ci95": 4.3459,
+          "min": 46.958,
+          "max": 67.0
+        },
+        "deadline_success_rate": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "messages_per_delivery": {
+          "mean": 185.439,
+          "std": 24.9362,
+          "ci95": 17.837,
+          "min": 148.58,
+          "max": 230.83
+        },
+        "bytes_per_delivery": {
+          "mean": 84953.22,
+          "std": 11091.2201,
+          "ci95": 7933.6297,
+          "min": 70188.3,
+          "max": 106281.1
+        },
+        "avg_recovery_time_s": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "duplicate_assignment_rate": {
+          "mean": 0.0721,
+          "std": 0.0573,
+          "ci95": 0.041,
+          "min": 0.0043,
+          "max": 0.1731
+        },
+        "energy_per_delivery_pct": {
+          "mean": 17.969,
+          "std": 1.7211,
+          "ci95": 1.2311,
+          "min": 14.459,
+          "max": 19.53
+        },
+        "safety_violations": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "reconciliations": {
+          "mean": 22.8,
+          "std": 6.8928,
+          "ci95": 4.9305,
+          "min": 14.0,
+          "max": 37.0
+        }
+      },
+      "cbba": {
+        "delivery_success_rate": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "avg_delivery_time_s": {
+          "mean": 65.1583,
+          "std": 9.0783,
+          "ci95": 6.4937,
+          "min": 54.0,
+          "max": 84.25
+        },
+        "deadline_success_rate": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "messages_per_delivery": {
+          "mean": 87.067,
+          "std": 12.8294,
+          "ci95": 9.177,
+          "min": 65.0,
+          "max": 107.58
+        },
+        "bytes_per_delivery": {
+          "mean": 63321.18,
+          "std": 15616.6216,
+          "ci95": 11170.682,
+          "min": 41930.4,
+          "max": 82930.2
+        },
+        "avg_recovery_time_s": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "duplicate_assignment_rate": {
+          "mean": 0.0185,
+          "std": 0.01,
+          "ci95": 0.0071,
+          "min": 0.0074,
+          "max": 0.038
+        },
+        "energy_per_delivery_pct": {
+          "mean": 21.034,
+          "std": 3.3628,
+          "ci95": 2.4054,
+          "min": 16.239,
+          "max": 25.977
+        },
+        "safety_violations": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "reconciliations": {
+          "mean": 18.8,
+          "std": 7.3756,
+          "ci95": 5.2758,
+          "min": 7.0,
+          "max": 35.0
+        }
+      }
+    },
+    "partition": {
+      "swarmsync": {
+        "delivery_success_rate": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "avg_delivery_time_s": {
+          "mean": 52.754,
+          "std": 7.0786,
+          "ci95": 5.0634,
+          "min": 38.667,
+          "max": 59.333
+        },
+        "deadline_success_rate": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "messages_per_delivery": {
+          "mean": 86.375,
+          "std": 8.042,
+          "ci95": 5.7525,
+          "min": 73.58,
+          "max": 94.92
+        },
+        "bytes_per_delivery": {
+          "mean": 71647.05,
+          "std": 10659.5726,
+          "ci95": 7624.8691,
+          "min": 54452.1,
+          "max": 85404.2
+        },
+        "avg_recovery_time_s": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "duplicate_assignment_rate": {
+          "mean": 0.0407,
+          "std": 0.0157,
+          "ci95": 0.0112,
+          "min": 0.0185,
+          "max": 0.0645
+        },
+        "energy_per_delivery_pct": {
+          "mean": 19.9521,
+          "std": 1.7388,
+          "ci95": 1.2437,
+          "min": 16.619,
+          "max": 21.876
+        },
+        "safety_violations": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "reconciliations": {
+          "mean": 25.9,
+          "std": 8.7108,
+          "ci95": 6.2309,
+          "min": 14.0,
+          "max": 43.0
+        }
+      },
+      "centralized": {
+        "delivery_success_rate": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "avg_delivery_time_s": {
+          "mean": 42.8876,
+          "std": 6.5608,
+          "ci95": 4.693,
+          "min": 29.875,
+          "max": 55.167
+        },
+        "deadline_success_rate": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "messages_per_delivery": {
+          "mean": 41.941,
+          "std": 5.4914,
+          "ci95": 3.9281,
+          "min": 34.42,
+          "max": 53.75
+        },
+        "bytes_per_delivery": {
+          "mean": 6145.24,
+          "std": 730.0245,
+          "ci95": 522.1918,
+          "min": 5139.6,
+          "max": 7678.7
+        },
+        "avg_recovery_time_s": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "duplicate_assignment_rate": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "energy_per_delivery_pct": {
+          "mean": 17.5658,
+          "std": 1.8811,
+          "ci95": 1.3456,
+          "min": 13.713,
+          "max": 20.083
+        },
+        "safety_violations": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "reconciliations": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        }
+      },
+      "basic_auction": {
+        "delivery_success_rate": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "avg_delivery_time_s": {
+          "mean": 43.8459,
+          "std": 6.1478,
+          "ci95": 4.3975,
+          "min": 32.667,
+          "max": 50.167
+        },
+        "deadline_success_rate": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "messages_per_delivery": {
+          "mean": 112.125,
+          "std": 17.2344,
+          "ci95": 12.3279,
+          "min": 82.83,
+          "max": 135.17
+        },
+        "bytes_per_delivery": {
+          "mean": 63917.12,
+          "std": 13546.764,
+          "ci95": 9690.0979,
+          "min": 48646.4,
+          "max": 82411.5
+        },
+        "avg_recovery_time_s": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "duplicate_assignment_rate": {
+          "mean": 0.0307,
+          "std": 0.0243,
+          "ci95": 0.0174,
+          "min": 0.0026,
+          "max": 0.0649
+        },
+        "energy_per_delivery_pct": {
+          "mean": 17.4921,
+          "std": 1.6631,
+          "ci95": 1.1896,
+          "min": 14.995,
+          "max": 19.942
+        },
+        "safety_violations": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "reconciliations": {
+          "mean": 26.6,
+          "std": 7.3666,
+          "ci95": 5.2694,
+          "min": 16.0,
+          "max": 39.0
+        }
+      },
+      "cbba": {
+        "delivery_success_rate": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "avg_delivery_time_s": {
+          "mean": 51.1584,
+          "std": 9.4544,
+          "ci95": 6.7628,
+          "min": 38.167,
+          "max": 66.0
+        },
+        "deadline_success_rate": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "messages_per_delivery": {
+          "mean": 83.525,
+          "std": 13.029,
+          "ci95": 9.3198,
+          "min": 67.33,
+          "max": 104.92
+        },
+        "bytes_per_delivery": {
+          "mean": 73379.61,
+          "std": 17874.6905,
+          "ci95": 12785.8949,
+          "min": 51403.8,
+          "max": 100137.7
+        },
+        "avg_recovery_time_s": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "duplicate_assignment_rate": {
+          "mean": 0.0336,
+          "std": 0.0112,
+          "ci95": 0.008,
+          "min": 0.0179,
+          "max": 0.0503
+        },
+        "energy_per_delivery_pct": {
+          "mean": 20.1752,
+          "std": 2.7697,
+          "ci95": 1.9812,
+          "min": 16.493,
+          "max": 24.715
+        },
+        "safety_violations": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "reconciliations": {
+          "mean": 26.7,
+          "std": 6.7338,
+          "ci95": 4.8168,
+          "min": 18.0,
+          "max": 38.0
+        }
+      }
+    },
+    "drone_failure": {
+      "swarmsync": {
+        "delivery_success_rate": {
+          "mean": 0.8917,
+          "std": 0.0883,
+          "ci95": 0.0632,
+          "min": 0.75,
+          "max": 1.0
+        },
+        "avg_delivery_time_s": {
+          "mean": 79.3683,
+          "std": 6.5315,
+          "ci95": 4.672,
+          "min": 66.375,
+          "max": 88.889
+        },
+        "deadline_success_rate": {
+          "mean": 0.8917,
+          "std": 0.0883,
+          "ci95": 0.0632,
+          "min": 0.75,
+          "max": 1.0
+        },
+        "messages_per_delivery": {
+          "mean": 70.089,
+          "std": 10.984,
+          "ci95": 7.8569,
+          "min": 52.33,
+          "max": 87.33
+        },
+        "bytes_per_delivery": {
+          "mean": 40301.2,
+          "std": 7244.713,
+          "ci95": 5182.1954,
+          "min": 30088.8,
+          "max": 51734.8
+        },
+        "avg_recovery_time_s": {
+          "mean": 14.025,
+          "std": 8.563,
+          "ci95": 6.1252,
+          "min": 5.0,
+          "max": 27.0
+        },
+        "duplicate_assignment_rate": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "energy_per_delivery_pct": {
+          "mean": 20.4333,
+          "std": 3.1374,
+          "ci95": 2.2442,
+          "min": 15.205,
+          "max": 24.8
+        },
+        "safety_violations": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "reconciliations": {
+          "mean": 3.7,
+          "std": 2.406,
+          "ci95": 1.721,
+          "min": 0.0,
+          "max": 7.0
+        }
+      },
+      "centralized": {
+        "delivery_success_rate": {
+          "mean": 0.9667,
+          "std": 0.0583,
+          "ci95": 0.0417,
+          "min": 0.8333,
+          "max": 1.0
+        },
+        "avg_delivery_time_s": {
+          "mean": 75.1336,
+          "std": 10.0257,
+          "ci95": 7.1714,
+          "min": 62.375,
+          "max": 91.15
+        },
+        "deadline_success_rate": {
+          "mean": 0.9667,
+          "std": 0.0583,
+          "ci95": 0.0417,
+          "min": 0.8333,
+          "max": 1.0
+        },
+        "messages_per_delivery": {
+          "mean": 45.421,
+          "std": 6.5361,
+          "ci95": 4.6753,
+          "min": 34.33,
+          "max": 56.6
+        },
+        "bytes_per_delivery": {
+          "mean": 6811.0,
+          "std": 952.6232,
+          "ci95": 681.4183,
+          "min": 5235.0,
+          "max": 8476.0
+        },
+        "avg_recovery_time_s": {
+          "mean": 9.475,
+          "std": 4.4883,
+          "ci95": 3.2105,
+          "min": 2.25,
+          "max": 18.0
+        },
+        "duplicate_assignment_rate": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "energy_per_delivery_pct": {
+          "mean": 17.8271,
+          "std": 2.7768,
+          "ci95": 1.9863,
+          "min": 13.802,
+          "max": 23.055
+        },
+        "safety_violations": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "reconciliations": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        }
+      },
+      "basic_auction": {
+        "delivery_success_rate": {
+          "mean": 0.825,
+          "std": 0.0263,
+          "ci95": 0.0188,
+          "min": 0.75,
+          "max": 0.8333
+        },
+        "avg_delivery_time_s": {
+          "mean": 68.6517,
+          "std": 10.1082,
+          "ci95": 7.2305,
+          "min": 51.7,
+          "max": 81.55
+        },
+        "deadline_success_rate": {
+          "mean": 0.825,
+          "std": 0.0263,
+          "ci95": 0.0188,
+          "min": 0.75,
+          "max": 0.8333
+        },
+        "messages_per_delivery": {
+          "mean": 198.82,
+          "std": 20.8344,
+          "ci95": 14.903,
+          "min": 163.6,
+          "max": 237.0
+        },
+        "bytes_per_delivery": {
+          "mean": 74485.83,
+          "std": 10247.5332,
+          "ci95": 7330.1344,
+          "min": 57775.6,
+          "max": 88288.2
+        },
+        "avg_recovery_time_s": {
+          "mean": 0.05,
+          "std": 0.1054,
+          "ci95": 0.0754,
+          "min": 0.0,
+          "max": 0.25
+        },
+        "duplicate_assignment_rate": {
+          "mean": 0.025,
+          "std": 0.0212,
+          "ci95": 0.0151,
+          "min": 0.0,
+          "max": 0.0646
+        },
+        "energy_per_delivery_pct": {
+          "mean": 18.7795,
+          "std": 2.4847,
+          "ci95": 1.7773,
+          "min": 14.033,
+          "max": 22.723
+        },
+        "safety_violations": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "reconciliations": {
+          "mean": 6.2,
+          "std": 3.0111,
+          "ci95": 2.1539,
+          "min": 2.0,
+          "max": 10.0
+        }
+      },
+      "cbba": {
+        "delivery_success_rate": {
+          "mean": 0.9417,
+          "std": 0.0883,
+          "ci95": 0.0631,
+          "min": 0.75,
+          "max": 1.0
+        },
+        "avg_delivery_time_s": {
+          "mean": 75.243,
+          "std": 7.7481,
+          "ci95": 5.5422,
+          "min": 59.167,
+          "max": 84.333
+        },
+        "deadline_success_rate": {
+          "mean": 0.9417,
+          "std": 0.0883,
+          "ci95": 0.0631,
+          "min": 0.75,
+          "max": 1.0
+        },
+        "messages_per_delivery": {
+          "mean": 58.685,
+          "std": 10.1445,
+          "ci95": 7.2564,
+          "min": 45.67,
+          "max": 80.89
+        },
+        "bytes_per_delivery": {
+          "mean": 32710.0,
+          "std": 6860.6769,
+          "ci95": 4907.4917,
+          "min": 25077.1,
+          "max": 44566.8
+        },
+        "avg_recovery_time_s": {
+          "mean": 14.55,
+          "std": 14.0435,
+          "ci95": 10.0454,
+          "min": 4.25,
+          "max": 50.75
+        },
+        "duplicate_assignment_rate": {
+          "mean": 0.0037,
+          "std": 0.0059,
+          "ci95": 0.0042,
+          "min": 0.0,
+          "max": 0.0193
+        },
+        "energy_per_delivery_pct": {
+          "mean": 18.6532,
+          "std": 3.3206,
+          "ci95": 2.3753,
+          "min": 13.94,
+          "max": 24.75
+        },
+        "safety_violations": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "reconciliations": {
+          "mean": 4.9,
+          "std": 4.2804,
+          "ci95": 3.0618,
+          "min": 1.0,
+          "max": 15.0
+        }
+      }
+    },
+    "hub_failure": {
+      "swarmsync": {
+        "delivery_success_rate": {
+          "mean": 0.975,
+          "std": 0.0402,
+          "ci95": 0.0288,
+          "min": 0.9167,
+          "max": 1.0
+        },
+        "avg_delivery_time_s": {
+          "mean": 59.9882,
+          "std": 11.4159,
+          "ci95": 8.1659,
+          "min": 36.208,
+          "max": 75.545
+        },
+        "deadline_success_rate": {
+          "mean": 0.975,
+          "std": 0.0402,
+          "ci95": 0.0288,
+          "min": 0.9167,
+          "max": 1.0
+        },
+        "messages_per_delivery": {
+          "mean": 78.044,
+          "std": 14.8518,
+          "ci95": 10.6236,
+          "min": 54.25,
+          "max": 102.82
+        },
+        "bytes_per_delivery": {
+          "mean": 50148.96,
+          "std": 11958.1233,
+          "ci95": 8553.7318,
+          "min": 34350.8,
+          "max": 70092.7
+        },
+        "avg_recovery_time_s": {
+          "mean": 12.2,
+          "std": 5.4273,
+          "ci95": 3.8822,
+          "min": 5.0,
+          "max": 25.0
+        },
+        "duplicate_assignment_rate": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "energy_per_delivery_pct": {
+          "mean": 20.0365,
+          "std": 3.8957,
+          "ci95": 2.7866,
+          "min": 13.18,
+          "max": 25.389
+        },
+        "safety_violations": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "reconciliations": {
+          "mean": 4.6,
+          "std": 3.2042,
+          "ci95": 2.292,
+          "min": 0.0,
+          "max": 8.0
+        }
+      },
+      "centralized": {
+        "delivery_success_rate": {
+          "mean": 0.25,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.25,
+          "max": 0.25
+        },
+        "avg_delivery_time_s": {
+          "mean": 28.5,
+          "std": 7.0268,
+          "ci95": 5.0263,
+          "min": 20.833,
+          "max": 41.0
+        },
+        "deadline_success_rate": {
+          "mean": 0.25,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.25,
+          "max": 0.25
+        },
+        "messages_per_delivery": {
+          "mean": 31.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 31.0,
+          "max": 31.0
+        },
+        "bytes_per_delivery": {
+          "mean": 4373.93,
+          "std": 36.1616,
+          "ci95": 25.8667,
+          "min": 4310.3,
+          "max": 4410.3
+        },
+        "avg_recovery_time_s": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "duplicate_assignment_rate": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "energy_per_delivery_pct": {
+          "mean": 21.5239,
+          "std": 3.0441,
+          "ci95": 2.1775,
+          "min": 17.675,
+          "max": 27.033
+        },
+        "safety_violations": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "reconciliations": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        }
+      },
+      "basic_auction": {
+        "delivery_success_rate": {
+          "mean": 0.9167,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.9167,
+          "max": 0.9167
+        },
+        "avg_delivery_time_s": {
+          "mean": 48.1135,
+          "std": 8.5692,
+          "ci95": 6.1296,
+          "min": 36.318,
+          "max": 60.591
+        },
+        "deadline_success_rate": {
+          "mean": 0.9167,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.9167,
+          "max": 0.9167
+        },
+        "messages_per_delivery": {
+          "mean": 132.199,
+          "std": 18.517,
+          "ci95": 13.2453,
+          "min": 108.0,
+          "max": 159.0
+        },
+        "bytes_per_delivery": {
+          "mean": 50229.98,
+          "std": 12731.5771,
+          "ci95": 9106.9889,
+          "min": 30851.4,
+          "max": 71419.2
+        },
+        "avg_recovery_time_s": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "duplicate_assignment_rate": {
+          "mean": 0.0142,
+          "std": 0.0096,
+          "ci95": 0.0069,
+          "min": 0.0,
+          "max": 0.0291
+        },
+        "energy_per_delivery_pct": {
+          "mean": 18.7073,
+          "std": 2.0879,
+          "ci95": 1.4935,
+          "min": 15.203,
+          "max": 21.867
+        },
+        "safety_violations": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "reconciliations": {
+          "mean": 8.9,
+          "std": 5.0651,
+          "ci95": 3.6231,
+          "min": 3.0,
+          "max": 18.0
+        }
+      },
+      "cbba": {
+        "delivery_success_rate": {
+          "mean": 0.9917,
+          "std": 0.0263,
+          "ci95": 0.0188,
+          "min": 0.9167,
+          "max": 1.0
+        },
+        "avg_delivery_time_s": {
+          "mean": 57.781,
+          "std": 9.4965,
+          "ci95": 6.7929,
+          "min": 38.667,
+          "max": 72.708
+        },
+        "deadline_success_rate": {
+          "mean": 0.9917,
+          "std": 0.0263,
+          "ci95": 0.0188,
+          "min": 0.9167,
+          "max": 1.0
+        },
+        "messages_per_delivery": {
+          "mean": 70.215,
+          "std": 9.3013,
+          "ci95": 6.6533,
+          "min": 56.0,
+          "max": 87.82
+        },
+        "bytes_per_delivery": {
+          "mean": 45171.91,
+          "std": 9264.2148,
+          "ci95": 6626.7596,
+          "min": 31631.6,
+          "max": 65600.2
+        },
+        "avg_recovery_time_s": {
+          "mean": 11.0,
+          "std": 4.2032,
+          "ci95": 3.0066,
+          "min": 5.0,
+          "max": 19.5
+        },
+        "duplicate_assignment_rate": {
+          "mean": 0.0047,
+          "std": 0.0051,
+          "ci95": 0.0036,
+          "min": 0.0,
+          "max": 0.0132
+        },
+        "energy_per_delivery_pct": {
+          "mean": 19.1463,
+          "std": 2.898,
+          "ci95": 2.073,
+          "min": 14.439,
+          "max": 24.555
+        },
+        "safety_violations": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "reconciliations": {
+          "mean": 5.0,
+          "std": 3.3333,
+          "ci95": 2.3844,
+          "min": 0.0,
+          "max": 11.0
+        }
+      }
+    }
+  },
+  "scale_summary": {
+    "N=3": {
+      "swarmsync": {
+        "delivery_success_rate": {
+          "mean": 0.81,
+          "std": 0.0876,
+          "ci95": 0.0626,
+          "min": 0.7,
+          "max": 0.9
+        },
+        "avg_delivery_time_s": {
+          "mean": 56.2298,
+          "std": 9.3553,
+          "ci95": 6.6919,
+          "min": 43.857,
+          "max": 71.889
+        },
+        "deadline_success_rate": {
+          "mean": 0.81,
+          "std": 0.0876,
+          "ci95": 0.0626,
+          "min": 0.7,
+          "max": 0.9
+        },
+        "messages_per_delivery": {
+          "mean": 58.619,
+          "std": 7.9816,
+          "ci95": 5.7093,
+          "min": 46.33,
+          "max": 71.57
+        },
+        "bytes_per_delivery": {
+          "mean": 30978.85,
+          "std": 6357.1116,
+          "ci95": 4547.2878,
+          "min": 24363.3,
+          "max": 45234.9
+        },
+        "avg_recovery_time_s": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "duplicate_assignment_rate": {
+          "mean": 0.0088,
+          "std": 0.0148,
+          "ci95": 0.0106,
+          "min": 0.0,
+          "max": 0.0392
+        },
+        "energy_per_delivery_pct": {
+          "mean": 20.1019,
+          "std": 2.6194,
+          "ci95": 1.8737,
+          "min": 16.182,
+          "max": 23.637
+        },
+        "safety_violations": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "reconciliations": {
+          "mean": 3.9,
+          "std": 3.178,
+          "ci95": 2.2733,
+          "min": 0.0,
+          "max": 9.0
+        }
+      },
+      "centralized": {
+        "delivery_success_rate": {
+          "mean": 0.94,
+          "std": 0.0699,
+          "ci95": 0.05,
+          "min": 0.8,
+          "max": 1.0
+        },
+        "avg_delivery_time_s": {
+          "mean": 55.9149,
+          "std": 6.677,
+          "ci95": 4.7761,
+          "min": 43.15,
+          "max": 62.4
+        },
+        "deadline_success_rate": {
+          "mean": 0.94,
+          "std": 0.0699,
+          "ci95": 0.05,
+          "min": 0.8,
+          "max": 1.0
+        },
+        "messages_per_delivery": {
+          "mean": 41.321,
+          "std": 6.6155,
+          "ci95": 4.7321,
+          "min": 29.5,
+          "max": 51.62
+        },
+        "bytes_per_delivery": {
+          "mean": 6229.82,
+          "std": 947.0798,
+          "ci95": 677.453,
+          "min": 4523.3,
+          "max": 7684.9
+        },
+        "avg_recovery_time_s": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "duplicate_assignment_rate": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "energy_per_delivery_pct": {
+          "mean": 16.4672,
+          "std": 2.6259,
+          "ci95": 1.8784,
+          "min": 11.546,
+          "max": 20.235
+        },
+        "safety_violations": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "reconciliations": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        }
+      },
+      "basic_auction": {
+        "delivery_success_rate": {
+          "mean": 0.93,
+          "std": 0.0823,
+          "ci95": 0.0589,
+          "min": 0.8,
+          "max": 1.0
+        },
+        "avg_delivery_time_s": {
+          "mean": 58.608,
+          "std": 6.4428,
+          "ci95": 4.6086,
+          "min": 45.65,
+          "max": 65.875
+        },
+        "deadline_success_rate": {
+          "mean": 0.93,
+          "std": 0.0823,
+          "ci95": 0.0589,
+          "min": 0.8,
+          "max": 1.0
+        },
+        "messages_per_delivery": {
+          "mean": 144.845,
+          "std": 36.3369,
+          "ci95": 25.992,
+          "min": 98.9,
+          "max": 205.12
+        },
+        "bytes_per_delivery": {
+          "mean": 52828.37,
+          "std": 13429.1055,
+          "ci95": 9605.9359,
+          "min": 37451.1,
+          "max": 74577.8
+        },
+        "avg_recovery_time_s": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "duplicate_assignment_rate": {
+          "mean": 0.0213,
+          "std": 0.0229,
+          "ci95": 0.0164,
+          "min": 0.0,
+          "max": 0.0782
+        },
+        "energy_per_delivery_pct": {
+          "mean": 16.9183,
+          "std": 2.6151,
+          "ci95": 1.8706,
+          "min": 13.126,
+          "max": 20.783
+        },
+        "safety_violations": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "reconciliations": {
+          "mean": 5.6,
+          "std": 3.3731,
+          "ci95": 2.4128,
+          "min": 1.0,
+          "max": 12.0
+        }
+      },
+      "cbba": {
+        "delivery_success_rate": {
+          "mean": 0.86,
+          "std": 0.0843,
+          "ci95": 0.0603,
+          "min": 0.7,
+          "max": 1.0
+        },
+        "avg_delivery_time_s": {
+          "mean": 54.6201,
+          "std": 4.3208,
+          "ci95": 3.0907,
+          "min": 49.714,
+          "max": 63.875
+        },
+        "deadline_success_rate": {
+          "mean": 0.86,
+          "std": 0.0843,
+          "ci95": 0.0603,
+          "min": 0.7,
+          "max": 1.0
+        },
+        "messages_per_delivery": {
+          "mean": 51.57,
+          "std": 9.3001,
+          "ci95": 6.6524,
+          "min": 36.5,
+          "max": 69.43
+        },
+        "bytes_per_delivery": {
+          "mean": 27471.37,
+          "std": 4691.7043,
+          "ci95": 3356.0099,
+          "min": 18518.4,
+          "max": 32007.1
+        },
+        "avg_recovery_time_s": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "duplicate_assignment_rate": {
+          "mean": 0.0033,
+          "std": 0.0044,
+          "ci95": 0.0031,
+          "min": 0.0,
+          "max": 0.0123
+        },
+        "energy_per_delivery_pct": {
+          "mean": 18.5294,
+          "std": 2.4334,
+          "ci95": 1.7406,
+          "min": 14.318,
+          "max": 22.851
+        },
+        "safety_violations": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "reconciliations": {
+          "mean": 4.8,
+          "std": 3.8528,
+          "ci95": 2.756,
+          "min": 0.0,
+          "max": 13.0
+        }
+      }
+    },
+    "N=5": {
+      "swarmsync": {
+        "delivery_success_rate": {
+          "mean": 0.9818,
+          "std": 0.0383,
+          "ci95": 0.0274,
+          "min": 0.9091,
+          "max": 1.0
+        },
+        "avg_delivery_time_s": {
+          "mean": 48.6481,
+          "std": 4.1382,
+          "ci95": 2.9601,
+          "min": 43.273,
+          "max": 57.136
+        },
+        "deadline_success_rate": {
+          "mean": 0.9818,
+          "std": 0.0383,
+          "ci95": 0.0274,
+          "min": 0.9091,
+          "max": 1.0
+        },
+        "messages_per_delivery": {
+          "mean": 88.895,
+          "std": 12.6558,
+          "ci95": 9.0528,
+          "min": 76.36,
+          "max": 115.3
+        },
+        "bytes_per_delivery": {
+          "mean": 60325.82,
+          "std": 15712.0734,
+          "ci95": 11238.9593,
+          "min": 44156.3,
+          "max": 92653.4
+        },
+        "avg_recovery_time_s": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "duplicate_assignment_rate": {
+          "mean": 0.0038,
+          "std": 0.0063,
+          "ci95": 0.0045,
+          "min": 0.0,
+          "max": 0.0177
+        },
+        "energy_per_delivery_pct": {
+          "mean": 19.0565,
+          "std": 2.2351,
+          "ci95": 1.5988,
+          "min": 16.786,
+          "max": 23.31
+        },
+        "safety_violations": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "reconciliations": {
+          "mean": 4.6,
+          "std": 4.7656,
+          "ci95": 3.4089,
+          "min": 0.0,
+          "max": 13.0
+        }
+      },
+      "centralized": {
+        "delivery_success_rate": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "avg_delivery_time_s": {
+          "mean": 41.718,
+          "std": 7.253,
+          "ci95": 5.1881,
+          "min": 30.727,
+          "max": 54.545
+        },
+        "deadline_success_rate": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "messages_per_delivery": {
+          "mean": 48.091,
+          "std": 6.3532,
+          "ci95": 4.5445,
+          "min": 36.45,
+          "max": 58.27
+        },
+        "bytes_per_delivery": {
+          "mean": 7077.85,
+          "std": 871.8685,
+          "ci95": 623.6538,
+          "min": 5478.0,
+          "max": 8486.7
+        },
+        "avg_recovery_time_s": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "duplicate_assignment_rate": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "energy_per_delivery_pct": {
+          "mean": 17.0693,
+          "std": 1.8691,
+          "ci95": 1.337,
+          "min": 13.836,
+          "max": 20.1
+        },
+        "safety_violations": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "reconciliations": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        }
+      },
+      "basic_auction": {
+        "delivery_success_rate": {
+          "mean": 0.9818,
+          "std": 0.0383,
+          "ci95": 0.0274,
+          "min": 0.9091,
+          "max": 1.0
+        },
+        "avg_delivery_time_s": {
+          "mean": 44.4024,
+          "std": 6.9145,
+          "ci95": 4.946,
+          "min": 35.0,
+          "max": 57.409
+        },
+        "deadline_success_rate": {
+          "mean": 0.9818,
+          "std": 0.0383,
+          "ci95": 0.0274,
+          "min": 0.9091,
+          "max": 1.0
+        },
+        "messages_per_delivery": {
+          "mean": 120.654,
+          "std": 26.4378,
+          "ci95": 18.9111,
+          "min": 94.64,
+          "max": 164.2
+        },
+        "bytes_per_delivery": {
+          "mean": 59004.44,
+          "std": 12360.3067,
+          "ci95": 8841.4165,
+          "min": 43242.3,
+          "max": 81687.0
+        },
+        "avg_recovery_time_s": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "duplicate_assignment_rate": {
+          "mean": 0.0134,
+          "std": 0.0207,
+          "ci95": 0.0148,
+          "min": 0.0014,
+          "max": 0.0712
+        },
+        "energy_per_delivery_pct": {
+          "mean": 18.0006,
+          "std": 2.6203,
+          "ci95": 1.8743,
+          "min": 14.668,
+          "max": 23.259
+        },
+        "safety_violations": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "reconciliations": {
+          "mean": 13.6,
+          "std": 5.2324,
+          "ci95": 3.7428,
+          "min": 6.0,
+          "max": 20.0
+        }
+      },
+      "cbba": {
+        "delivery_success_rate": {
+          "mean": 0.9909,
+          "std": 0.0287,
+          "ci95": 0.0206,
+          "min": 0.9091,
+          "max": 1.0
+        },
+        "avg_delivery_time_s": {
+          "mean": 48.2802,
+          "std": 4.6441,
+          "ci95": 3.322,
+          "min": 41.955,
+          "max": 54.455
+        },
+        "deadline_success_rate": {
+          "mean": 0.9909,
+          "std": 0.0287,
+          "ci95": 0.0206,
+          "min": 0.9091,
+          "max": 1.0
+        },
+        "messages_per_delivery": {
+          "mean": 84.141,
+          "std": 13.2266,
+          "ci95": 9.4611,
+          "min": 69.55,
+          "max": 115.5
+        },
+        "bytes_per_delivery": {
+          "mean": 58554.99,
+          "std": 14615.1642,
+          "ci95": 10454.3323,
+          "min": 39794.6,
+          "max": 88550.1
+        },
+        "avg_recovery_time_s": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "duplicate_assignment_rate": {
+          "mean": 0.0024,
+          "std": 0.0032,
+          "ci95": 0.0023,
+          "min": 0.0,
+          "max": 0.0107
+        },
+        "energy_per_delivery_pct": {
+          "mean": 19.0872,
+          "std": 2.3881,
+          "ci95": 1.7082,
+          "min": 16.826,
+          "max": 24.799
+        },
+        "safety_violations": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "reconciliations": {
+          "mean": 4.6,
+          "std": 4.2216,
+          "ci95": 3.0198,
+          "min": 0.0,
+          "max": 13.0
+        }
+      }
+    },
+    "N=10": {
+      "swarmsync": {
+        "delivery_success_rate": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "avg_delivery_time_s": {
+          "mean": 36.9687,
+          "std": 4.6945,
+          "ci95": 3.358,
+          "min": 31.156,
+          "max": 44.875
+        },
+        "deadline_success_rate": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "messages_per_delivery": {
+          "mean": 192.969,
+          "std": 20.9389,
+          "ci95": 14.9777,
+          "min": 169.25,
+          "max": 228.75
+        },
+        "bytes_per_delivery": {
+          "mean": 220206.41,
+          "std": 44096.6615,
+          "ci95": 31542.6598,
+          "min": 154343.9,
+          "max": 304045.0
+        },
+        "avg_recovery_time_s": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "duplicate_assignment_rate": {
+          "mean": 0.0009,
+          "std": 0.0014,
+          "ci95": 0.001,
+          "min": 0.0,
+          "max": 0.0043
+        },
+        "energy_per_delivery_pct": {
+          "mean": 19.0511,
+          "std": 2.0896,
+          "ci95": 1.4947,
+          "min": 16.479,
+          "max": 23.399
+        },
+        "safety_violations": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "reconciliations": {
+          "mean": 7.0,
+          "std": 4.4222,
+          "ci95": 3.1632,
+          "min": 1.0,
+          "max": 16.0
+        }
+      },
+      "centralized": {
+        "delivery_success_rate": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "avg_delivery_time_s": {
+          "mean": 31.0126,
+          "std": 4.0156,
+          "ci95": 2.8724,
+          "min": 23.688,
+          "max": 36.281
+        },
+        "deadline_success_rate": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "messages_per_delivery": {
+          "mean": 60.407,
+          "std": 5.0532,
+          "ci95": 3.6146,
+          "min": 55.38,
+          "max": 68.38
+        },
+        "bytes_per_delivery": {
+          "mean": 8530.03,
+          "std": 705.2572,
+          "ci95": 504.4756,
+          "min": 7777.6,
+          "max": 9705.1
+        },
+        "avg_recovery_time_s": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "duplicate_assignment_rate": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "energy_per_delivery_pct": {
+          "mean": 17.4218,
+          "std": 1.7385,
+          "ci95": 1.2436,
+          "min": 14.369,
+          "max": 19.992
+        },
+        "safety_violations": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "reconciliations": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        }
+      },
+      "basic_auction": {
+        "delivery_success_rate": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "avg_delivery_time_s": {
+          "mean": 34.4156,
+          "std": 4.1475,
+          "ci95": 2.9668,
+          "min": 26.125,
+          "max": 38.562
+        },
+        "deadline_success_rate": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "messages_per_delivery": {
+          "mean": 130.501,
+          "std": 11.6453,
+          "ci95": 8.33,
+          "min": 117.69,
+          "max": 150.94
+        },
+        "bytes_per_delivery": {
+          "mean": 162652.29,
+          "std": 41337.5475,
+          "ci95": 29569.0456,
+          "min": 107004.6,
+          "max": 234050.2
+        },
+        "avg_recovery_time_s": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "duplicate_assignment_rate": {
+          "mean": 0.0246,
+          "std": 0.0238,
+          "ci95": 0.017,
+          "min": 0.001,
+          "max": 0.0859
+        },
+        "energy_per_delivery_pct": {
+          "mean": 18.4261,
+          "std": 1.8109,
+          "ci95": 1.2953,
+          "min": 15.38,
+          "max": 20.693
+        },
+        "safety_violations": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "reconciliations": {
+          "mean": 43.5,
+          "std": 17.3221,
+          "ci95": 12.3906,
+          "min": 24.0,
+          "max": 77.0
+        }
+      },
+      "cbba": {
+        "delivery_success_rate": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "avg_delivery_time_s": {
+          "mean": 37.9,
+          "std": 4.5003,
+          "ci95": 3.2191,
+          "min": 31.281,
+          "max": 44.062
+        },
+        "deadline_success_rate": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "messages_per_delivery": {
+          "mean": 189.469,
+          "std": 16.8085,
+          "ci95": 12.0232,
+          "min": 170.0,
+          "max": 213.94
+        },
+        "bytes_per_delivery": {
+          "mean": 222326.26,
+          "std": 39085.7107,
+          "ci95": 27958.2905,
+          "min": 175379.4,
+          "max": 293753.6
+        },
+        "avg_recovery_time_s": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "duplicate_assignment_rate": {
+          "mean": 0.0033,
+          "std": 0.0025,
+          "ci95": 0.0018,
+          "min": 0.0012,
+          "max": 0.0095
+        },
+        "energy_per_delivery_pct": {
+          "mean": 19.6091,
+          "std": 1.8956,
+          "ci95": 1.3559,
+          "min": 16.561,
+          "max": 23.099
+        },
+        "safety_violations": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "reconciliations": {
+          "mean": 4.0,
+          "std": 4.4472,
+          "ci95": 3.1811,
+          "min": 0.0,
+          "max": 13.0
+        }
+      }
+    },
+    "N=20": {
+      "swarmsync": {
+        "delivery_success_rate": {
+          "mean": 0.9423,
+          "std": 0.0272,
+          "ci95": 0.0194,
+          "min": 0.8846,
+          "max": 0.9615
+        },
+        "avg_delivery_time_s": {
+          "mean": 34.4139,
+          "std": 2.0602,
+          "ci95": 1.4737,
+          "min": 31.86,
+          "max": 37.625
+        },
+        "deadline_success_rate": {
+          "mean": 0.9423,
+          "std": 0.0272,
+          "ci95": 0.0194,
+          "min": 0.8846,
+          "max": 0.9615
+        },
+        "messages_per_delivery": {
+          "mean": 447.968,
+          "std": 45.4148,
+          "ci95": 32.4856,
+          "min": 406.92,
+          "max": 521.62
+        },
+        "bytes_per_delivery": {
+          "mean": 786313.81,
+          "std": 148766.3369,
+          "ci95": 106413.6329,
+          "min": 589108.5,
+          "max": 1017866.3
+        },
+        "avg_recovery_time_s": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "duplicate_assignment_rate": {
+          "mean": 0.0002,
+          "std": 0.0003,
+          "ci95": 0.0002,
+          "min": 0.0,
+          "max": 0.0007
+        },
+        "energy_per_delivery_pct": {
+          "mean": 20.0711,
+          "std": 1.015,
+          "ci95": 0.726,
+          "min": 18.837,
+          "max": 21.793
+        },
+        "safety_violations": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "reconciliations": {
+          "mean": 23.4,
+          "std": 16.1052,
+          "ci95": 11.5202,
+          "min": 3.0,
+          "max": 45.0
+        }
+      },
+      "centralized": {
+        "delivery_success_rate": {
+          "mean": 0.9731,
+          "std": 0.026,
+          "ci95": 0.0186,
+          "min": 0.9231,
+          "max": 1.0
+        },
+        "avg_delivery_time_s": {
+          "mean": 30.1114,
+          "std": 2.3973,
+          "ci95": 1.7148,
+          "min": 24.354,
+          "max": 32.52
+        },
+        "deadline_success_rate": {
+          "mean": 0.9731,
+          "std": 0.026,
+          "ci95": 0.0186,
+          "min": 0.9231,
+          "max": 1.0
+        },
+        "messages_per_delivery": {
+          "mean": 106.695,
+          "std": 3.9854,
+          "ci95": 2.8508,
+          "min": 100.81,
+          "max": 113.21
+        },
+        "bytes_per_delivery": {
+          "mean": 13771.47,
+          "std": 477.0841,
+          "ci95": 341.2617,
+          "min": 13014.3,
+          "max": 14394.9
+        },
+        "avg_recovery_time_s": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "duplicate_assignment_rate": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "energy_per_delivery_pct": {
+          "mean": 18.1935,
+          "std": 0.9797,
+          "ci95": 0.7008,
+          "min": 16.728,
+          "max": 19.652
+        },
+        "safety_violations": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "reconciliations": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        }
+      },
+      "basic_auction": {
+        "delivery_success_rate": {
+          "mean": 0.9577,
+          "std": 0.0337,
+          "ci95": 0.0241,
+          "min": 0.8846,
+          "max": 1.0
+        },
+        "avg_delivery_time_s": {
+          "mean": 32.7113,
+          "std": 2.7706,
+          "ci95": 1.9818,
+          "min": 25.891,
+          "max": 35.08
+        },
+        "deadline_success_rate": {
+          "mean": 0.9577,
+          "std": 0.0337,
+          "ci95": 0.0241,
+          "min": 0.8846,
+          "max": 1.0
+        },
+        "messages_per_delivery": {
+          "mean": 265.818,
+          "std": 22.285,
+          "ci95": 15.9406,
+          "min": 237.77,
+          "max": 302.04
+        },
+        "bytes_per_delivery": {
+          "mean": 592497.77,
+          "std": 124999.8947,
+          "ci95": 89413.3255,
+          "min": 416185.6,
+          "max": 756803.9
+        },
+        "avg_recovery_time_s": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "duplicate_assignment_rate": {
+          "mean": 0.032,
+          "std": 0.0199,
+          "ci95": 0.0142,
+          "min": 0.0132,
+          "max": 0.0811
+        },
+        "energy_per_delivery_pct": {
+          "mean": 19.4957,
+          "std": 0.8608,
+          "ci95": 0.6157,
+          "min": 18.077,
+          "max": 21.072
+        },
+        "safety_violations": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "reconciliations": {
+          "mean": 107.6,
+          "std": 28.2968,
+          "ci95": 20.2409,
+          "min": 66.0,
+          "max": 153.0
+        }
+      },
+      "cbba": {
+        "delivery_success_rate": {
+          "mean": 0.95,
+          "std": 0.0317,
+          "ci95": 0.0226,
+          "min": 0.8846,
+          "max": 1.0
+        },
+        "avg_delivery_time_s": {
+          "mean": 33.8803,
+          "std": 1.8778,
+          "ci95": 1.3432,
+          "min": 30.104,
+          "max": 36.231
+        },
+        "deadline_success_rate": {
+          "mean": 0.95,
+          "std": 0.0317,
+          "ci95": 0.0226,
+          "min": 0.8846,
+          "max": 1.0
+        },
+        "messages_per_delivery": {
+          "mean": 421.913,
+          "std": 30.3402,
+          "ci95": 21.7025,
+          "min": 373.0,
+          "max": 478.39
+        },
+        "bytes_per_delivery": {
+          "mean": 739650.16,
+          "std": 131216.793,
+          "ci95": 93860.3177,
+          "min": 474689.3,
+          "max": 913986.7
+        },
+        "avg_recovery_time_s": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "duplicate_assignment_rate": {
+          "mean": 0.0029,
+          "std": 0.0015,
+          "ci95": 0.0011,
+          "min": 0.0007,
+          "max": 0.0054
+        },
+        "energy_per_delivery_pct": {
+          "mean": 19.7579,
+          "std": 1.038,
+          "ci95": 0.7425,
+          "min": 18.104,
+          "max": 21.997
+        },
+        "safety_violations": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "reconciliations": {
+          "mean": 22.7,
+          "std": 20.0336,
+          "ci95": 14.3302,
+          "min": 4.0,
+          "max": 61.0
+        }
+      }
+    }
+  },
+  "figures": [
+    "delivery_success_rate.svg",
+    "messages_per_delivery.svg",
+    "avg_delivery_time.svg",
+    "scale_messages_per_delivery.svg"
+  ]
+}

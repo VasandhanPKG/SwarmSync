@@ -1,0 +1,14 @@
+{
+  "name": "partition",
+  "description": "East-West network partition from t=12s to t=60s followed by reconnection and reconciliation",
+  "fleet_size": 5,
+  "total_tasks": 12,
+  "comm_range": 500.0,
+  "packet_loss_prob": 0.05,
+  "min_delay": 0.05,
+  "max_delay": 0.25,
+  "partition_window": [12.0, 60.0],
+  "dynamic_arrival": true,
+  "spawn_interval": 5.0,
+  "max_duration": 170.0
+}

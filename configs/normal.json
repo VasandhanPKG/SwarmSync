@@ -1,0 +1,12 @@
+{
+  "name": "normal",
+  "description": "Nominal operation with 5 drones and 12 delivery tasks",
+  "fleet_size": 5,
+  "total_tasks": 12,
+  "comm_range": 520.0,
+  "packet_loss_prob": 0.0,
+  "min_delay": 0.0,
+  "max_delay": 0.05,
+  "dynamic_arrival": false,
+  "max_duration": 150.0
+}
