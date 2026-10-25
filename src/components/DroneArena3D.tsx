@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
-import { Eye, Compass, Crosshair, Layers, PlusCircle, ChevronDown, ChevronUp } from 'lucide-react';
+import { Eye, Compass, Crosshair, Layers, PlusCircle, ChevronDown, ChevronUp, Activity } from 'lucide-react';
 import { DeliveryTask, DroneState, SwarmSyncSimulator } from '../sim/engine';
 
 interface DroneArena3DProps {
@@ -40,43 +40,87 @@ function makeSoftShadowTexture(): THREE.CanvasTexture {
   const ctx = c.getContext('2d')!;
   const g = ctx.createRadialGradient(64, 64, 6, 64, 64, 64);
   g.addColorStop(0, 'rgba(0,0,0,0.52)');
-  g.addColorStop(0.55, 'rgba(0,0,0,0.2)');
+  g.addColorStop(0.55, 'rgba(0,0,0,0.22)');
   g.addColorStop(1, 'rgba(0,0,0,0)');
   ctx.fillStyle = g;
   ctx.fillRect(0, 0, 128, 128);
   return new THREE.CanvasTexture(c);
 }
 
-function makeTacticalGroundTexture(): THREE.CanvasTexture {
+/**
+ * Procedural Small Town ground texture:
+ * Grassy town blocks, concrete sidewalks, paved two-lane streets with dashed center lines,
+ * and town square plazas.
+ */
+function makeSmallTownGroundTexture(): THREE.CanvasTexture {
   const c = document.createElement('canvas');
-  c.width = c.height = 512;
+  c.width = c.height = 1024;
   const ctx = c.getContext('2d')!;
-  ctx.fillStyle = '#131d31';
-  ctx.fillRect(0, 0, 512, 512);
 
-  // Subtle sub-grid
-  ctx.strokeStyle = 'rgba(56, 189, 248, 0.08)';
-  ctx.lineWidth = 1;
-  for (let i = 0; i <= 512; i += 64) {
-    ctx.beginPath();
-    ctx.moveTo(i, 0);
-    ctx.lineTo(i, 512);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(0, i);
-    ctx.lineTo(512, i);
-    ctx.stroke();
+  // Base meadow / lawn green
+  ctx.fillStyle = '#689f52';
+  ctx.fillRect(0, 0, 1024, 1024);
+
+  // Subtle lawn variation patches per block
+  const blockColors = ['#62964d', '#6fa658', '#5c8f47', '#73ab5c'];
+  const step = 256;
+  for (let bx = 0; bx < 4; bx++) {
+    for (let by = 0; by < 4; by++) {
+      ctx.fillStyle = blockColors[(bx + by) % blockColors.length];
+      ctx.fillRect(bx * step + 28, by * step + 28, step - 56, step - 56);
+
+      // Inner courtyard footpath / driveway tint
+      ctx.strokeStyle = 'rgba(214, 211, 209, 0.35)';
+      ctx.lineWidth = 4;
+      ctx.strokeRect(bx * step + 34, by * step + 34, step - 68, step - 68);
+    }
   }
 
-  // Primary tile border
-  ctx.strokeStyle = 'rgba(148, 163, 184, 0.16)';
-  ctx.lineWidth = 2;
-  ctx.strokeRect(0, 0, 512, 512);
+  // Concrete sidewalks bordering every street
+  const roadHalf = 22;
+  const sidewalkHalf = 29;
+  ctx.fillStyle = '#d6d3d1';
+  for (let i = 0; i <= 1024; i += step) {
+    ctx.fillRect(i - sidewalkHalf, 0, sidewalkHalf * 2, 1024);
+    ctx.fillRect(0, i - sidewalkHalf, 1024, sidewalkHalf * 2);
+  }
+
+  // Asphalt town roads
+  ctx.fillStyle = '#334155';
+  for (let i = 0; i <= 1024; i += step) {
+    ctx.fillRect(i - roadHalf, 0, roadHalf * 2, 1024);
+    ctx.fillRect(0, i - roadHalf, 1024, roadHalf * 2);
+  }
+
+  // Dashed yellow center lane markings
+  ctx.strokeStyle = '#fbbf24';
+  ctx.lineWidth = 2.5;
+  ctx.setLineDash([14, 14]);
+  for (let i = 0; i <= 1024; i += step) {
+    ctx.beginPath();
+    ctx.moveTo(i, 0);
+    ctx.lineTo(i, 1024);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(0, i);
+    ctx.lineTo(1024, i);
+    ctx.stroke();
+  }
+  ctx.setLineDash([]);
+
+  // Clean intersection boxes & crosswalk stripes
+  ctx.fillStyle = '#475569';
+  for (let ix = 0; ix <= 1024; ix += step) {
+    for (let iy = 0; iy <= 1024; iy += step) {
+      ctx.fillRect(ix - roadHalf, iy - roadHalf, roadHalf * 2, roadHalf * 2);
+    }
+  }
 
   const tex = new THREE.CanvasTexture(c);
   tex.wrapS = THREE.RepeatWrapping;
   tex.wrapT = THREE.RepeatWrapping;
-  tex.repeat.set(14, 14);
+  tex.repeat.set(3, 3);
   tex.anisotropy = 4;
   return tex;
 }
@@ -91,17 +135,16 @@ function updateDroneLabelCanvas(
   const h = canvas.height;
   ctx.clearRect(0, 0, w, h);
 
-  // Rounded badge background
   ctx.fillStyle = !d.alive
-    ? 'rgba(127, 29, 29, 0.92)'
+    ? 'rgba(127, 29, 29, 0.94)'
     : isSelected
-    ? 'rgba(15, 23, 42, 0.95)'
-    : 'rgba(15, 23, 42, 0.86)';
+    ? 'rgba(15, 23, 42, 0.96)'
+    : 'rgba(15, 23, 42, 0.88)';
   ctx.strokeStyle = !d.alive
     ? '#f43f5e'
     : isSelected
     ? '#38bdf8'
-    : 'rgba(148, 163, 184, 0.45)';
+    : 'rgba(148, 163, 184, 0.55)';
   ctx.lineWidth = isSelected ? 3 : 2;
 
   ctx.beginPath();
@@ -109,7 +152,6 @@ function updateDroneLabelCanvas(
   ctx.fill();
   ctx.stroke();
 
-  // Header line: Autonomous Drone ID + Orders Dropped
   ctx.font = 'bold 20px "IBM Plex Mono", monospace';
   ctx.fillStyle = !d.alive ? '#fecdd3' : '#38bdf8';
   ctx.fillText(`D${d.id} [AUTONOMOUS]`, 16, 30);
@@ -119,7 +161,6 @@ function updateDroneLabelCanvas(
   ctx.textAlign = 'right';
   ctx.fillText(`DROPPED: ${d.ordersDropped}`, w - 16, 30);
 
-  // Second line: Current independent decision / action
   ctx.textAlign = 'left';
   ctx.font = '600 16px "IBM Plex Mono", monospace';
   ctx.fillStyle = '#f8fafc';
@@ -128,6 +169,238 @@ function updateDroneLabelCanvas(
       ? d.autonomousDecision.slice(0, 35) + '…'
       : d.autonomousDecision;
   ctx.fillText(summary, 16, 56);
+}
+
+/**
+ * Builds the 3D Small Town scenery (houses with pitched roofs, main street shops,
+ * town trees, street lamps, parked cars, water tower, and distant green hills).
+ */
+function buildSmallTownEnvironment(scene: THREE.Scene, isSoftwareGl: boolean): THREE.Group {
+  const townGroup = new THREE.Group();
+
+  // Shared materials for small town buildings & nature
+  const wallColors = [0xfef3c7, 0xf8fafc, 0xffedd5, 0xe0f2fe, 0xfde68a, 0xf1f5f9, 0xfecdd3];
+  const roofColors = [0xb91c1c, 0x9a3412, 0x334155, 0x7c2d12, 0x1e3a8a, 0x065f46];
+  const wallMats = wallColors.map(
+    (c) => new THREE.MeshStandardMaterial({ color: c, roughness: 0.85, metalness: 0.05 })
+  );
+  const roofMats = roofColors.map(
+    (c) => new THREE.MeshStandardMaterial({ color: c, roughness: 0.75, metalness: 0.12 })
+  );
+  const doorMat = new THREE.MeshStandardMaterial({ color: 0x451a03, roughness: 0.7 });
+  const windowMat = new THREE.MeshStandardMaterial({
+    color: 0xbae6fd,
+    emissive: 0x38bdf8,
+    emissiveIntensity: 0.25,
+    roughness: 0.2,
+    metalness: 0.6,
+  });
+  const trunkMat = new THREE.MeshStandardMaterial({ color: 0x78350f, roughness: 0.9 });
+  const foliageMat1 = new THREE.MeshStandardMaterial({
+    color: 0x2e6f40,
+    roughness: 0.85,
+    flatShading: true,
+  });
+  const foliageMat2 = new THREE.MeshStandardMaterial({
+    color: 0x3b854f,
+    roughness: 0.85,
+    flatShading: true,
+  });
+
+  // Helper to place a cozy 3D Small Town House
+  const addTownHouse = (
+    x: number,
+    z: number,
+    w: number,
+    h: number,
+    d: number,
+    rotY: number,
+    styleIdx: number
+  ) => {
+    const house = new THREE.Group();
+    house.position.set(x, 0, z);
+    house.rotation.y = rotY;
+
+    // Main cottage/house body
+    const body = new THREE.Mesh(
+      new THREE.BoxGeometry(w, h, d),
+      wallMats[styleIdx % wallMats.length]
+    );
+    body.position.y = h / 2;
+    body.castShadow = !isSoftwareGl;
+    body.receiveShadow = !isSoftwareGl;
+    house.add(body);
+
+    // Pitched 4-sided pyramid/gable roof
+    const roofRadius = Math.hypot(w, d) * 0.58;
+    const roofH = h * 0.55;
+    const roof = new THREE.Mesh(
+      new THREE.ConeGeometry(roofRadius, roofH, 4),
+      roofMats[styleIdx % roofMats.length]
+    );
+    roof.position.y = h + roofH / 2 - 0.05;
+    roof.rotation.y = Math.PI / 4;
+    house.add(roof);
+
+    // Chimney on every second house
+    if (styleIdx % 2 === 0) {
+      const chimney = new THREE.Mesh(
+        new THREE.BoxGeometry(0.32, roofH * 0.85, 0.32),
+        roofMats[(styleIdx + 1) % roofMats.length]
+      );
+      chimney.position.set(w * 0.24, h + roofH * 0.45, -d * 0.18);
+      house.add(chimney);
+    }
+
+    // Front door & glowing windows
+    const door = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.78, 0.08), doorMat);
+    door.position.set(0, 0.39, d / 2 + 0.02);
+    house.add(door);
+
+    for (const wx of [-w * 0.28, w * 0.28]) {
+      const win = new THREE.Mesh(new THREE.BoxGeometry(0.46, 0.44, 0.08), windowMat);
+      win.position.set(wx, h * 0.55, d / 2 + 0.02);
+      house.add(win);
+    }
+
+    townGroup.add(house);
+  };
+
+  // Helper to place a 3D Town Tree
+  const addTree = (x: number, z: number, scale = 1.0, idx = 0) => {
+    const tree = new THREE.Group();
+    tree.position.set(x, 0, z);
+    tree.scale.setScalar(scale);
+
+    const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.24, 1.1, 7), trunkMat);
+    trunk.position.y = 0.55;
+    tree.add(trunk);
+
+    const crown1 = new THREE.Mesh(
+      new THREE.ConeGeometry(0.95, 1.8, 7),
+      idx % 2 === 0 ? foliageMat1 : foliageMat2
+    );
+    crown1.position.y = 1.65;
+    tree.add(crown1);
+
+    const crown2 = new THREE.Mesh(
+      new THREE.ConeGeometry(0.72, 1.4, 7),
+      idx % 2 === 0 ? foliageMat2 : foliageMat1
+    );
+    crown2.position.y = 2.45;
+    tree.add(crown2);
+
+    townGroup.add(tree);
+  };
+
+  // Road centers triggered by repeat(3,3) on 260x260 plane occur every ~21.66 units.
+  // Let's place cozy town houses and trees inside neighborhood blocks!
+  const blockCenters = [-39, -17.5, 4.2, 25.8, 44];
+  let idx = 0;
+  for (let bx = 0; bx < blockCenters.length; bx++) {
+    for (let bz = 0; bz < blockCenters.length; bz++) {
+      const cx = blockCenters[bx];
+      const cz = blockCenters[bz];
+
+      // Place 2 houses and 2 yard trees per neighborhood block
+      const offsets: [number, number, number][] = [
+        [-4.2, -3.8, 0],
+        [4.2, 3.8, Math.PI],
+      ];
+      for (const [ox, oz, rot] of offsets) {
+        const hx = cx + ox;
+        const hz = cz + oz;
+        // Keep central plaza (-6..6, -6..6) open as a town park
+        if (Math.hypot(hx, hz) < 8) continue;
+        const w = 2.4 + (idx % 3) * 0.45;
+        const h = 1.45 + (idx % 2) * 0.55;
+        const d = 2.1 + (idx % 2) * 0.4;
+        addTownHouse(hx, hz, w, h, d, rot, idx);
+        idx++;
+      }
+
+      // Yard trees around the block
+      addTree(cx - 4.5, cz + 3.8, 0.85 + (idx % 3) * 0.15, idx);
+      addTree(cx + 4.5, cz - 3.8, 0.9 + ((idx + 1) % 3) * 0.15, idx + 1);
+    }
+  }
+
+  // Small Town Park & Gazebo in the town center (replaces the old radar tower!)
+  const parkPond = new THREE.Mesh(
+    new THREE.CylinderGeometry(3.4, 3.6, 0.12, 24),
+    new THREE.MeshStandardMaterial({ color: 0x38bdf8, roughness: 0.18, metalness: 0.4 })
+  );
+  parkPond.position.set(-1.5, 0.06, 1.2);
+  townGroup.add(parkPond);
+
+  const gazeboBase = new THREE.Mesh(
+    new THREE.CylinderGeometry(1.6, 1.75, 0.25, 8),
+    new THREE.MeshStandardMaterial({ color: 0xfef3c7, roughness: 0.7 })
+  );
+  gazeboBase.position.set(2.8, 0.12, -1.8);
+  townGroup.add(gazeboBase);
+
+  const gazeboRoof = new THREE.Mesh(
+    new THREE.ConeGeometry(1.9, 1.1, 8),
+    new THREE.MeshStandardMaterial({ color: 0x9a3412, roughness: 0.65 })
+  );
+  gazeboRoof.position.set(2.8, 1.65, -1.8);
+  townGroup.add(gazeboRoof);
+
+  // Classic Small Town Water Tower on the northwest outskirts
+  const wtGroup = new THREE.Group();
+  wtGroup.position.set(-46, 0, -42);
+  const tank = new THREE.Mesh(
+    new THREE.CylinderGeometry(2.1, 2.1, 2.6, 16),
+    new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.4, metalness: 0.5 })
+  );
+  tank.position.y = 5.8;
+  wtGroup.add(tank);
+  const tankCap = new THREE.Mesh(
+    new THREE.ConeGeometry(2.25, 1.1, 16),
+    new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.5 })
+  );
+  tankCap.position.y = 7.65;
+  wtGroup.add(tankCap);
+  const legGeo = new THREE.CylinderGeometry(0.12, 0.16, 5.2, 8);
+  const legMat = new THREE.MeshStandardMaterial({ color: 0x475569, metalness: 0.6, roughness: 0.4 });
+  for (let l = 0; l < 4; l++) {
+    const la = (l * Math.PI) / 2 + Math.PI / 4;
+    const leg = new THREE.Mesh(legGeo, legMat);
+    leg.position.set(Math.cos(la) * 1.3, 2.5, Math.sin(la) * 1.3);
+    wtGroup.add(leg);
+  }
+  townGroup.add(wtGroup);
+
+  // Rolling green countryside hills around the small town perimeter
+  const hillMat1 = new THREE.MeshStandardMaterial({
+    color: 0x4d7c3f,
+    roughness: 0.92,
+    metalness: 0.02,
+    flatShading: true,
+  });
+  const hillMat2 = new THREE.MeshStandardMaterial({
+    color: 0x3f6a34,
+    roughness: 0.94,
+    metalness: 0.02,
+    flatShading: true,
+  });
+  for (let i = 0; i < 24; i++) {
+    const ang = (i / 24) * Math.PI * 2;
+    const dist = 92 + (i % 3) * 12;
+    const radius = 18 + (i % 4) * 6;
+    const peakH = 10 + (i % 5) * 3.8;
+    const hill = new THREE.Mesh(
+      new THREE.ConeGeometry(radius, peakH, 7),
+      i % 2 === 0 ? hillMat1 : hillMat2
+    );
+    hill.position.set(Math.cos(ang) * dist, peakH * 0.45 - 0.3, Math.sin(ang) * dist);
+    hill.rotation.y = i * 0.6;
+    townGroup.add(hill);
+  }
+
+  scene.add(townGroup);
+  return townGroup;
 }
 
 interface DroneMeshRig {
@@ -177,6 +450,7 @@ export const DroneArena3D: React.FC<DroneArena3DProps> = ({
   const [cameraMode, setCameraMode] = useState<CameraMode>('orbit');
   const [showMeshLinks, setShowMeshLinks] = useState<boolean>(true);
   const [showTrails, setShowTrails] = useState<boolean>(true);
+  const [showPhysicsDebug, setShowPhysicsDebug] = useState<boolean>(false);
   const [spawnArmed, setSpawnArmed] = useState<boolean>(false);
   const [pendingPickup, setPendingPickup] = useState<[number, number] | null>(null);
   const [controlsCollapsed, setControlsCollapsed] = useState<boolean>(false);
@@ -192,6 +466,9 @@ export const DroneArena3D: React.FC<DroneArena3DProps> = ({
 
   const showTrailsRef = useRef<boolean>(showTrails);
   showTrailsRef.current = showTrails;
+
+  const showPhysicsDebugRef = useRef<boolean>(showPhysicsDebug);
+  showPhysicsDebugRef.current = showPhysicsDebug;
 
   const spawnArmedRef = useRef<boolean>(spawnArmed);
   spawnArmedRef.current = spawnArmed;
@@ -235,15 +512,16 @@ export const DroneArena3D: React.FC<DroneArena3DProps> = ({
     renderer.setPixelRatio(isSoftwareGl ? 1 : Math.min(window.devicePixelRatio, 2));
     renderer.setSize(width, height);
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.15;
+    renderer.toneMappingExposure = 1.08;
     renderer.shadowMap.enabled = !isSoftwareGl;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
     container.innerHTML = '';
     container.appendChild(renderer.domElement);
 
+    // Bright Daylight Small Town Sky & Horizon Fog
     const scene = new THREE.Scene();
-    const skyColor = 0x0f172a;
+    const skyColor = 0xbad9f5;
     scene.background = new THREE.Color(skyColor);
     scene.fog = new THREE.FogExp2(skyColor, 0.0022);
 
@@ -254,7 +532,7 @@ export const DroneArena3D: React.FC<DroneArena3DProps> = ({
     pmrem.dispose();
 
     const camera = new THREE.PerspectiveCamera(45, width / height, 0.5, 450);
-    camera.position.set(0, 42, 62);
+    camera.position.set(0, 40, 60);
 
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
@@ -264,12 +542,12 @@ export const DroneArena3D: React.FC<DroneArena3DProps> = ({
     controls.maxDistance = 165;
     controls.target.set(0, 4, 0);
 
-    // Lighting: Hemisphere sky/ground fill + warm key sun + cool rim light
-    const hemiLight = new THREE.HemisphereLight(0xdbeafe, 0x1e293b, 0.98);
+    // Lighting: Warm golden sunlight + sky/grass hemisphere fill
+    const hemiLight = new THREE.HemisphereLight(0xe0f2fe, 0x4d7c3f, 1.15);
     scene.add(hemiLight);
 
-    const keyLight = new THREE.DirectionalLight(0xfff4e0, 2.7);
-    keyLight.position.set(55, 85, 45);
+    const keyLight = new THREE.DirectionalLight(0xfffbeb, 2.4);
+    keyLight.position.set(55, 90, 45);
     if (!isSoftwareGl) {
       keyLight.castShadow = true;
       keyLight.shadow.mapSize.set(1024, 1024);
@@ -284,57 +562,63 @@ export const DroneArena3D: React.FC<DroneArena3DProps> = ({
     }
     scene.add(keyLight);
 
-    const rimLight = new THREE.DirectionalLight(0x38bdf8, 0.95);
-    rimLight.position.set(-55, 40, -50);
+    const rimLight = new THREE.DirectionalLight(0xbae6fd, 0.75);
+    rimLight.position.set(-55, 45, -50);
     scene.add(rimLight);
 
-    // Ground plane with procedural tactical grid texture
-    const groundTex = makeTacticalGroundTexture();
+    // Small Town Ground Plane (streets, sidewalks, lawns)
+    const groundTex = makeSmallTownGroundTexture();
     const groundGeo = new THREE.PlaneGeometry(260, 260);
     const groundMat = new THREE.MeshStandardMaterial({
       map: groundTex,
-      roughness: 0.9,
-      metalness: 0.06,
+      roughness: 0.92,
+      metalness: 0.02,
     });
     const groundMesh = new THREE.Mesh(groundGeo, groundMat);
     groundMesh.rotation.x = -Math.PI / 2;
     groundMesh.receiveShadow = !isSoftwareGl;
     scene.add(groundMesh);
 
-    // Active 1000m x 1000m operational boundary frame on ground (-50..+50)
-    const borderPts = [
-      new THREE.Vector3(-50, 0.06, -50),
-      new THREE.Vector3(50, 0.06, -50),
-      new THREE.Vector3(50, 0.06, 50),
-      new THREE.Vector3(-50, 0.06, 50),
-      new THREE.Vector3(-50, 0.06, -50),
-    ];
-    const borderGeo = new THREE.BufferGeometry().setFromPoints(borderPts);
-    const borderLine = new THREE.Line(
-      borderGeo,
-      new THREE.LineBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.45 })
-    );
-    scene.add(borderLine);
+    // Build 3D Small Town houses, pitched roofs, trees, park pond, water tower & rolling green hills
+    buildSmallTownEnvironment(scene, isSoftwareGl);
 
-    // Natural perimeter ridge silhouettes so the ground plane never shows a raw edge
-    const ridgeMat = new THREE.MeshStandardMaterial({
-      color: 0x1b283d,
-      roughness: 0.95,
-      metalness: 0.04,
-      flatShading: true,
-    });
-    const ridgeGroup = new THREE.Group();
-    for (let i = 0; i < 20; i++) {
-      const ang = (i / 20) * Math.PI * 2;
-      const dist = 92 + (i % 3) * 11;
-      const radius = 16 + (i % 4) * 5;
-      const peakH = 12 + (i % 5) * 4.5;
-      const cone = new THREE.Mesh(new THREE.ConeGeometry(radius, peakH, 6), ridgeMat);
-      cone.position.set(Math.cos(ang) * dist, peakH * 0.5 - 0.2, Math.sin(ang) * dist);
-      cone.rotation.y = i * 0.7;
-      ridgeGroup.add(cone);
-    }
-    scene.add(ridgeGroup);
+    // 3D Physics Debugger Overlay Group for the Selected Drone (Velocity vector, RVO collision zone, Comm range)
+    const physicsDebugGroup = new THREE.Group();
+    const velArrow = new THREE.ArrowHelper(
+      new THREE.Vector3(1, 0, 0),
+      new THREE.Vector3(0, 0, 0),
+      4,
+      0xfef08a,
+      0.9,
+      0.55
+    );
+    physicsDebugGroup.add(velArrow);
+
+    const rvoZoneMesh = new THREE.Mesh(
+      new THREE.SphereGeometry(4.2, 20, 14),
+      new THREE.MeshBasicMaterial({
+        color: 0xf43f5e,
+        wireframe: true,
+        transparent: true,
+        opacity: 0.45,
+      })
+    );
+    physicsDebugGroup.add(rvoZoneMesh);
+
+    const commRangeRing = new THREE.Mesh(
+      new THREE.RingGeometry(67.5, 68.2, 48),
+      new THREE.MeshBasicMaterial({
+        color: 0x0284c7,
+        side: THREE.DoubleSide,
+        transparent: true,
+        opacity: 0.45,
+        depthWrite: false,
+      })
+    );
+    commRangeRing.rotation.x = -Math.PI / 2;
+    physicsDebugGroup.add(commRangeRing);
+    physicsDebugGroup.visible = false;
+    scene.add(physicsDebugGroup);
 
     // Central Dispatch Hub (ONLY visible in 'centralized' baseline mode; hidden in decentralized modes!)
     const hubGroup = new THREE.Group();
@@ -383,7 +667,7 @@ export const DroneArena3D: React.FC<DroneArena3DProps> = ({
       new THREE.MeshBasicMaterial({
         color: 0xf43f5e,
         transparent: true,
-        opacity: 0.16,
+        opacity: 0.22,
         side: THREE.DoubleSide,
         depthWrite: false,
       })
@@ -401,17 +685,17 @@ export const DroneArena3D: React.FC<DroneArena3DProps> = ({
     const linkLines = new THREE.LineSegments(
       linkGeo,
       new THREE.LineBasicMaterial({
-        color: 0x38bdf8,
+        color: 0x0284c7,
         transparent: true,
-        opacity: 0.38,
+        opacity: 0.55,
       })
     );
     scene.add(linkLines);
 
     // Pool of 3D in-flight message packet spheres
     const packetPool: THREE.Mesh[] = [];
-    const packetGeo = new THREE.SphereGeometry(0.28, 10, 10);
-    const packetMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8 });
+    const packetGeo = new THREE.SphereGeometry(0.3, 10, 10);
+    const packetMat = new THREE.MeshBasicMaterial({ color: 0x0284c7 });
     for (let i = 0; i < 40; i++) {
       const m = new THREE.Mesh(packetGeo, packetMat);
       m.visible = false;
@@ -419,7 +703,7 @@ export const DroneArena3D: React.FC<DroneArena3DProps> = ({
       packetPool.push(m);
     }
 
-    // Pool of 3D Falling Order Crates (visualizes physical package drop from drone to pad!)
+    // Pool of 3D Falling Order Crates (visualizes physical package drop from drone to town address!)
     const dropPool: FallingDropRig[] = [];
     const dropCrateGeo = new THREE.BoxGeometry(0.95, 0.72, 0.95);
     const dropCrateMat = new THREE.MeshStandardMaterial({
@@ -431,9 +715,9 @@ export const DroneArena3D: React.FC<DroneArena3DProps> = ({
     });
     const dropChuteGeo = new THREE.ConeGeometry(0.95, 0.65, 10, 1, true);
     const dropChuteMat = new THREE.MeshBasicMaterial({
-      color: 0x34d399,
+      color: 0x10b981,
       transparent: true,
-      opacity: 0.75,
+      opacity: 0.82,
       side: THREE.DoubleSide,
       depthWrite: false,
     });
@@ -447,9 +731,9 @@ export const DroneArena3D: React.FC<DroneArena3DProps> = ({
       group.add(chute);
 
       const impactRing = new THREE.Mesh(
-        new THREE.RingGeometry(0.8, 1.35, 24),
+        new THREE.RingGeometry(0.85, 1.45, 24),
         new THREE.MeshBasicMaterial({
-          color: 0x10b981,
+          color: 0x059669,
           side: THREE.DoubleSide,
           transparent: true,
           opacity: 0.9,
@@ -457,7 +741,7 @@ export const DroneArena3D: React.FC<DroneArena3DProps> = ({
         })
       );
       impactRing.rotation.x = -Math.PI / 2;
-      impactRing.position.y = 0.08;
+      impactRing.position.y = 0.1;
       scene.add(impactRing);
 
       group.visible = false;
@@ -470,36 +754,36 @@ export const DroneArena3D: React.FC<DroneArena3DProps> = ({
     const softShadowTex = makeSoftShadowTexture();
     const fuselageGeo = new THREE.BoxGeometry(1.5, 0.38, 0.96);
     const fuselageMat = new THREE.MeshStandardMaterial({
-      color: 0x1e293b,
-      roughness: 0.72,
-      metalness: 0.25,
+      color: 0x0f172a,
+      roughness: 0.68,
+      metalness: 0.28,
     });
     const armGeo = new THREE.CylinderGeometry(0.065, 0.065, 3.2, 8);
     const armMat = new THREE.MeshStandardMaterial({
-      color: 0x334155,
-      roughness: 0.65,
-      metalness: 0.35,
+      color: 0x1e293b,
+      roughness: 0.6,
+      metalness: 0.38,
     });
     const motorGeo = new THREE.CylinderGeometry(0.2, 0.17, 0.32, 12);
     const motorMat = new THREE.MeshStandardMaterial({
-      color: 0xcbd5e1,
+      color: 0xe2e8f0,
       roughness: 0.22,
       metalness: 0.88,
     });
     const rotorGeo = new THREE.CylinderGeometry(0.75, 0.75, 0.025, 16);
     const rotorMat = new THREE.MeshBasicMaterial({
-      color: 0x94a3b8,
+      color: 0x1e293b,
       transparent: true,
-      opacity: 0.44,
+      opacity: 0.48,
       depthWrite: false,
     });
     const skidGeo = new THREE.CylinderGeometry(0.045, 0.045, 1.35, 8);
-    const cargoGeo = new THREE.BoxGeometry(0.76, 0.56, 0.72);
+    const cargoGeo = new THREE.BoxGeometry(0.78, 0.58, 0.74);
     const cargoMat = new THREE.MeshStandardMaterial({
       color: 0xf59e0b,
       emissive: 0xb45309,
       emissiveIntensity: 0.25,
-      roughness: 0.45,
+      roughness: 0.42,
       metalness: 0.18,
     });
 
@@ -585,7 +869,7 @@ export const DroneArena3D: React.FC<DroneArena3DProps> = ({
         bodyGroup.add(skid);
       }
 
-      // 11. Under-slung order crate (visible when carrying order to dropoff)
+      // 11. Under-slung order crate (visible when carrying order to town dropoff)
       const cargoBox = new THREE.Mesh(cargoGeo, cargoMat);
       cargoBox.position.set(0, -0.44, 0);
       cargoBox.visible = false;
@@ -593,12 +877,12 @@ export const DroneArena3D: React.FC<DroneArena3DProps> = ({
 
       // Selection ring around active drone
       const selectionRing = new THREE.Mesh(
-        new THREE.RingGeometry(1.65, 1.98, 32),
+        new THREE.RingGeometry(1.65, 2.0, 32),
         new THREE.MeshBasicMaterial({
-          color: 0x38bdf8,
+          color: 0x0284c7,
           side: THREE.DoubleSide,
           transparent: true,
-          opacity: 0.9,
+          opacity: 0.92,
           depthWrite: false,
         })
       );
@@ -622,33 +906,33 @@ export const DroneArena3D: React.FC<DroneArena3DProps> = ({
       labelSprite.scale.set(9.2, 1.68, 1);
       root.add(labelSprite);
 
-      // Individual Decentralized Sector Pad on ground (each drone has its own autonomous pad!)
+      // Individual Decentralized Town Sector Pad on ground
       const sectorPad = new THREE.Mesh(
         new THREE.RingGeometry(1.4, 1.85, 6),
         new THREE.MeshBasicMaterial({
-          color: 0x38bdf8,
+          color: 0x0284c7,
           side: THREE.DoubleSide,
           transparent: true,
-          opacity: 0.36,
+          opacity: 0.55,
           depthWrite: false,
         })
       );
       sectorPad.rotation.x = -Math.PI / 2;
-      sectorPad.position.set(simToWorldX(d.homePos[0]), 0.04, simToWorldZ(d.homePos[1]));
+      sectorPad.position.set(simToWorldX(d.homePos[0]), 0.06, simToWorldZ(d.homePos[1]));
       scene.add(sectorPad);
 
-      // Soft ground contact shadow disc directly below the drone on y = 0.04
+      // Soft ground contact shadow disc directly below the drone on y = 0.05
       const groundShadow = new THREE.Mesh(
         new THREE.PlaneGeometry(3.8, 3.8),
         new THREE.MeshBasicMaterial({
           map: softShadowTex,
           transparent: true,
-          opacity: 0.78,
+          opacity: 0.8,
           depthWrite: false,
         })
       );
       groundShadow.rotation.x = -Math.PI / 2;
-      groundShadow.position.y = 0.04;
+      groundShadow.position.y = 0.05;
       scene.add(groundShadow);
 
       // 3D Flight trail line
@@ -659,9 +943,9 @@ export const DroneArena3D: React.FC<DroneArena3DProps> = ({
       const trailLine = new THREE.Line(
         trailGeo,
         new THREE.LineBasicMaterial({
-          color: 0x38bdf8,
+          color: 0x0284c7,
           transparent: true,
-          opacity: 0.55,
+          opacity: 0.65,
         })
       );
       scene.add(trailLine);
@@ -695,52 +979,52 @@ export const DroneArena3D: React.FC<DroneArena3DProps> = ({
 
       // Ground route vector connecting Pickup -> Dropoff
       const routeGeo = new THREE.BufferGeometry().setFromPoints([
-        new THREE.Vector3(px, 0.07, pz),
-        new THREE.Vector3(dx, 0.07, dz),
+        new THREE.Vector3(px, 0.1, pz),
+        new THREE.Vector3(dx, 0.1, dz),
       ]);
       const routeLine = new THREE.Line(
         routeGeo,
         new THREE.LineBasicMaterial({
-          color: 0x38bdf8,
+          color: 0x0284c7,
           transparent: true,
-          opacity: 0.28,
+          opacity: 0.45,
         })
       );
       root.add(routeLine);
 
-      // Pickup ground pad + waiting order box
+      // Pickup concrete pad + waiting order box
       const pickupPad = new THREE.Mesh(
-        new THREE.RingGeometry(1.0, 1.5, 24),
+        new THREE.RingGeometry(1.0, 1.55, 24),
         new THREE.MeshBasicMaterial({
-          color: 0xf59e0b,
+          color: 0xd97706,
           side: THREE.DoubleSide,
           transparent: true,
-          opacity: 0.88,
+          opacity: 0.92,
           depthWrite: false,
         })
       );
       pickupPad.rotation.x = -Math.PI / 2;
-      pickupPad.position.set(px, 0.05, pz);
+      pickupPad.position.set(px, 0.08, pz);
       root.add(pickupPad);
 
       const pickupCrate = new THREE.Mesh(
-        new THREE.BoxGeometry(0.9, 0.68, 0.9),
-        new THREE.MeshStandardMaterial({ color: 0xf59e0b, roughness: 0.42, metalness: 0.2 })
+        new THREE.BoxGeometry(0.95, 0.72, 0.95),
+        new THREE.MeshStandardMaterial({ color: 0xf59e0b, roughness: 0.4, metalness: 0.2 })
       );
-      pickupCrate.position.set(px, 0.35, pz);
+      pickupCrate.position.set(px, 0.4, pz);
       root.add(pickupCrate);
 
-      // Dropoff ground pad + vertical translucent beacon
+      // Dropoff town delivery pad + vertical translucent beacon
       const dropoffPadMat = new THREE.MeshBasicMaterial({
-        color: 0x10b981,
+        color: 0x059669,
         side: THREE.DoubleSide,
         transparent: true,
-        opacity: 0.88,
+        opacity: 0.92,
         depthWrite: false,
       });
-      const dropoffPad = new THREE.Mesh(new THREE.RingGeometry(1.1, 1.65, 24), dropoffPadMat);
+      const dropoffPad = new THREE.Mesh(new THREE.RingGeometry(1.1, 1.7, 24), dropoffPadMat);
       dropoffPad.rotation.x = -Math.PI / 2;
-      dropoffPad.position.set(dx, 0.05, dz);
+      dropoffPad.position.set(dx, 0.08, dz);
       root.add(dropoffPad);
 
       const dropoffBeacon = new THREE.Mesh(
@@ -748,7 +1032,7 @@ export const DroneArena3D: React.FC<DroneArena3DProps> = ({
         new THREE.MeshBasicMaterial({
           color: 0x10b981,
           transparent: true,
-          opacity: 0.22,
+          opacity: 0.28,
           side: THREE.DoubleSide,
           depthWrite: false,
         })
@@ -756,10 +1040,10 @@ export const DroneArena3D: React.FC<DroneArena3DProps> = ({
       dropoffBeacon.position.set(dx, 3.1, dz);
       root.add(dropoffBeacon);
 
-      // Delivered Order Package sitting on the dropoff pad once dropped by a drone!
+      // Delivered Order Package sitting on the town dropoff pad once dropped by a drone!
       const deliveredCrate = new THREE.Group();
       const boxMesh = new THREE.Mesh(
-        new THREE.BoxGeometry(0.95, 0.72, 0.95),
+        new THREE.BoxGeometry(0.98, 0.74, 0.98),
         new THREE.MeshStandardMaterial({
           color: 0x10b981,
           emissive: 0x059669,
@@ -768,14 +1052,14 @@ export const DroneArena3D: React.FC<DroneArena3DProps> = ({
           metalness: 0.22,
         })
       );
-      boxMesh.position.y = 0.36;
+      boxMesh.position.y = 0.4;
       deliveredCrate.add(boxMesh);
 
       const strapMesh = new THREE.Mesh(
-        new THREE.BoxGeometry(1.0, 0.76, 0.22),
+        new THREE.BoxGeometry(1.04, 0.78, 0.24),
         new THREE.MeshStandardMaterial({ color: 0xfef3c7, roughness: 0.5 })
       );
-      strapMesh.position.y = 0.36;
+      strapMesh.position.y = 0.4;
       deliveredCrate.add(strapMesh);
 
       deliveredCrate.position.set(dx, 0, dz);
@@ -983,7 +1267,7 @@ export const DroneArena3D: React.FC<DroneArena3DProps> = ({
         }
 
         // Ground shadow directly beneath drone
-        rig.groundShadow.position.set(rig.root.position.x, 0.04, rig.root.position.z);
+        rig.groundShadow.position.set(rig.root.position.x, 0.05, rig.root.position.z);
         const shadowScale = Math.max(0.45, 1.15 - wy * 0.05);
         rig.groundShadow.scale.set(shadowScale, shadowScale, 1);
 
@@ -1013,7 +1297,28 @@ export const DroneArena3D: React.FC<DroneArena3DProps> = ({
         }
       }
 
-      // Sync Delivery Task pads, beacons, and delivered packages sitting on dropoff pads
+      // Update 3D Physics Debugger overlay on selected drone
+      const selDrone = sim.drones.get(selectedDroneIdRef.current);
+      const selRig = droneRigs.get(selectedDroneIdRef.current);
+      if (showPhysicsDebugRef.current && selDrone && selRig) {
+        physicsDebugGroup.visible = true;
+        physicsDebugGroup.position.copy(selRig.root.position);
+        const vx = selDrone.velocity[0];
+        const vz = selDrone.velocity[1];
+        const spd = Math.hypot(vx, vz);
+        if (spd > 0.5) {
+          velArrow.visible = true;
+          velArrow.setDirection(new THREE.Vector3(vx, 0, vz).normalize());
+          velArrow.setLength(Math.min(7, 2 + (spd / 42) * 4.5), 0.9, 0.55);
+        } else {
+          velArrow.visible = false;
+        }
+        commRangeRing.position.y = -selRig.root.position.y + 0.12;
+      } else {
+        physicsDebugGroup.visible = false;
+      }
+
+      // Sync Delivery Task pads, beacons, and delivered packages sitting on town dropoff pads
       const consolidated = sim.getConsolidatedTasks();
       const presentTaskIds = new Set<string>();
       for (const t of consolidated) {
@@ -1024,7 +1329,7 @@ export const DroneArena3D: React.FC<DroneArena3DProps> = ({
           taskRigs.set(t.task_id, trig);
         }
         const isDone = t.status === 'COMPLETED';
-        trig.root.visible = true; // Keep completed dropoff pads & delivered orders visible in 3D!
+        trig.root.visible = true;
         trig.pickupCrate.visible = !isDone && !t.picked_up;
         trig.pickupPad.visible = !isDone && !t.picked_up;
         trig.routeLine.visible = !isDone;
@@ -1034,7 +1339,6 @@ export const DroneArena3D: React.FC<DroneArena3DProps> = ({
           trig.pickupCrate.rotation.y += dt * 1.1;
           trig.deliveredCrate.visible = false;
         } else {
-          // Show delivered package resting on the 3D dropoff pad once drop completes
           const activeDrop = (sim.activeDrops || []).find((dr) => dr.taskId === t.task_id);
           const dropElapsed = activeDrop ? sim.currentTime - activeDrop.droppedAt : 99;
           trig.deliveredCrate.visible = dropElapsed >= 1.2;
@@ -1047,7 +1351,7 @@ export const DroneArena3D: React.FC<DroneArena3DProps> = ({
         }
       }
 
-      // Animate 3D Falling Order Crates (physical order drop from drone to ground pad!)
+      // Animate 3D Falling Order Crates (physical order drop from drone to town dropoff pad!)
       const activeDrops = sim.activeDrops || [];
       for (let i = 0; i < dropPool.length; i++) {
         const drRig = dropPool[i];
@@ -1065,7 +1369,7 @@ export const DroneArena3D: React.FC<DroneArena3DProps> = ({
         if (age <= fallDuration) {
           const frac = age / fallDuration;
           const startY = Math.max(3.2, ev.startAlt * ALT_SCALE);
-          const curY = startY * (1 - frac) + 0.38 * frac;
+          const curY = startY * (1 - frac) + 0.4 * frac;
           drRig.group.position.set(wx, curY, wz);
           drRig.crate.rotation.y = age * 2.5;
           drRig.chute.visible = frac < 0.92;
@@ -1074,8 +1378,7 @@ export const DroneArena3D: React.FC<DroneArena3DProps> = ({
           drRig.group.visible = false;
         }
 
-        // Expanding emerald pulse ring on the ground dropoff pad
-        drRig.impactRing.position.set(wx, 0.08, wz);
+        drRig.impactRing.position.set(wx, 0.1, wz);
         const pulseScale = 1 + (age % 1.5) * 1.8;
         drRig.impactRing.scale.set(pulseScale, pulseScale, 1);
         drRig.impactRing.visible = true;
@@ -1133,7 +1436,6 @@ export const DroneArena3D: React.FC<DroneArena3DProps> = ({
 
       // Camera Mode behavior
       const cMode = cameraModeRef.current;
-      const selRig = droneRigs.get(selectedDroneIdRef.current);
       if (cMode === 'chase' && selRig) {
         const targetPos = selRig.root.position.clone();
         const desiredCam = new THREE.Vector3(targetPos.x - 14, targetPos.y + 9.5, targetPos.z + 16);
@@ -1178,7 +1480,7 @@ export const DroneArena3D: React.FC<DroneArena3DProps> = ({
       <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-2.5 bg-slate-900 border-b border-slate-800 text-xs text-slate-200">
         <div className="flex items-center gap-3 font-mono">
           <span className="inline-flex items-center gap-1.5 font-semibold text-emerald-400">
-            ● {sim.mode === 'centralized' ? 'CENTRALIZED BASELINE 3D' : 'DECENTRALIZED P2P SWARM (NO CENTRAL HUB)'}
+            ● {sim.mode === 'centralized' ? 'CENTRALIZED BASELINE · SMALL TOWN 3D' : 'DECENTRALIZED P2P SWARM · SMALL TOWN 3D'}
           </span>
           <span className="text-slate-600">|</span>
           <span className="text-amber-300 font-semibold">
@@ -1195,8 +1497,8 @@ export const DroneArena3D: React.FC<DroneArena3DProps> = ({
           {spawnArmed && (
             <span className="text-amber-400 font-semibold">
               {pendingPickup
-                ? `Click 3D ground for DROPOFF (Pickup at ${pendingPickup[0]}m, ${pendingPickup[1]}m)`
-                : 'Click 3D ground for PICKUP location'}
+                ? `Click town ground for DROPOFF (Pickup at ${pendingPickup[0]}m, ${pendingPickup[1]}m)`
+                : 'Click town ground for PICKUP location'}
             </span>
           )}
         </div>
@@ -1214,7 +1516,7 @@ export const DroneArena3D: React.FC<DroneArena3DProps> = ({
       <div
         ref={mountRef}
         className="w-full h-[540px] cursor-grab active:cursor-grabbing relative"
-        aria-label="3D Autonomous Drone Swarm Simulation Canvas"
+        aria-label="3D Autonomous Drone Swarm Small Town Simulation Canvas"
       />
 
       {/* Consolidated Collapsible Bottom Control Dock (Single-Row Compact Bar) */}
@@ -1285,6 +1587,19 @@ export const DroneArena3D: React.FC<DroneArena3DProps> = ({
               }`}
             >
               Trails
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setShowPhysicsDebug((v) => !v)}
+              className={`inline-flex items-center gap-1 px-2 py-1 rounded font-medium transition-colors whitespace-nowrap shrink-0 ${
+                showPhysicsDebug
+                  ? 'bg-slate-800 text-amber-300 border border-amber-500/40'
+                  : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
+              }`}
+            >
+              <Activity className="w-3 h-3" />
+              Physics Debug
             </button>
 
             <button
