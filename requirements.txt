@@ -1,0 +1,4 @@
+# SwarmSync Python Stage 1 Simulator & Benchmark Suite Requirements
+# Pure Python 3.10+ standard library is used for core simulation and SVG/PNG plotting
+# Optional testing/linting utilities:
+pytest>=8.0.0

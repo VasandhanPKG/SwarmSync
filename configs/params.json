@@ -1,0 +1,47 @@
+{
+  "version": "2.0.0",
+  "description": "Shared canonical parameter configuration for SwarmSync TypeScript Interactive Engine and Python Stage 1 Discrete-Time Simulator",
+  "world": {
+    "width_m": 1000.0,
+    "height_m": 1000.0,
+    "dt_s": 0.2,
+    "default_duration_s": 75.0,
+    "default_num_drones": 6
+  },
+  "drone": {
+    "speed_mps": 35.0,
+    "max_payload_kg": 3.5,
+    "battery_drain_moving_pct_per_s": 0.22,
+    "battery_drain_idle_pct_per_s": 0.03,
+    "energy_per_meter_pct": 0.015,
+    "reserve_battery_pct": 18.0,
+    "low_battery_warning_pct": 25.0,
+    "delivery_radius_m": 16.0
+  },
+  "network": {
+    "comm_range_m": 620.0,
+    "base_delay_s": 0.1,
+    "delay_jitter_s": 0.1,
+    "packet_loss_prob": 0.0,
+    "gossip_hop_limit": 3,
+    "message_ttl_s": 10.0,
+    "partition_split_x_m": 500.0
+  },
+  "protocol": {
+    "lease_duration_s": 6.0,
+    "renew_interval_s": 2.0,
+    "grace_period_s": 2.5,
+    "auction_window_s": 1.2,
+    "heartbeat_interval_s": 1.5,
+    "periodic_broadcast_interval_s": 1.0
+  },
+  "auction_weights": {
+    "w_t": 0.5,
+    "w_e": 0.3,
+    "w_r": 0.2
+  },
+  "metrics": {
+    "recovery_time_definition": "failure_injected_to_valid_reassignment_committed_s",
+    "recovery_time_formula": "t_reassigned_claim_committed - t_drone_failure_injected (theoretical bound: remaining_lease_at_kill [0..6.0s] + grace_period [2.5s] + auction_window [1.2s])"
+  }
+}

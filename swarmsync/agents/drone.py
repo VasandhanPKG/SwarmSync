@@ -28,10 +28,15 @@ class DroneAgent:
         initial_position: Tuple[float, float],
         network: SimulatedNetwork,
         base_position: Tuple[float, float] = (500.0, 500.0),
-        max_payload: float = 3.5,
-        speed: float = 22.0,
+        max_payload: float = 5.0,
+        speed: float = 35.0,
         periodic_broadcast: bool = False,
         use_leases: bool = True,
+        use_conflict_resolution: bool = True,
+        lease_duration: float = 6.0,
+        renew_interval: float = 2.0,
+        grace_period: float = 2.5,
+        auction_window: float = 1.2,
         w_t: float = 0.50,
         w_e: float = 0.30,
         w_r: float = 0.20,
@@ -55,8 +60,8 @@ class DroneAgent:
         )
         self.safety = SafetyMonitor(
             max_payload=max_payload,
-            battery_reserve=15.0,
-            energy_per_meter=0.016,
+            battery_reserve=18.0,
+            energy_per_meter=0.015,
             drone_speed=speed,
             base_pos=base_position,
         )
@@ -69,14 +74,15 @@ class DroneAgent:
         )
         self.assignment = AssignmentManager(
             agent_id=agent_id,
-            lease_duration=8.0,
-            renew_interval=2.5,
-            auction_window=1.6,
+            lease_duration=lease_duration,
+            renew_interval=renew_interval,
+            auction_window=auction_window,
             use_leases=use_leases,
+            use_conflict_resolution=use_conflict_resolution,
         )
         self.recovery = RecoveryManager(
             agent_id=agent_id,
-            grace_period=3.0,
+            grace_period=grace_period,
             heartbeat_timeout=6.0,
             use_leases=use_leases,
         )

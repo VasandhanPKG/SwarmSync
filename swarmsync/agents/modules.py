@@ -345,16 +345,18 @@ class AssignmentManager:
     def __init__(
         self,
         agent_id: int,
-        lease_duration: float = 8.0,
-        renew_interval: float = 2.5,
-        auction_window: float = 1.6,
+        lease_duration: float = 6.0,
+        renew_interval: float = 2.0,
+        auction_window: float = 1.2,
         use_leases: bool = True,
+        use_conflict_resolution: bool = True,
     ) -> None:
         self.agent_id = agent_id
         self.lease_duration = lease_duration
         self.renew_interval = renew_interval
         self.auction_window = auction_window
         self.use_leases = use_leases
+        self.use_conflict_resolution = use_conflict_resolution
 
         self.last_renew_sent_at: float = -999.0
         self.conflicts_resolved: int = 0
@@ -388,10 +390,6 @@ class AssignmentManager:
         if local_task.status == TaskStatus.COMPLETED:
             return False, False
 
-        # Stale version check: never overwrite newer version
-        if inc_version < local_task.version:
-            return False, False
-
         # Detect duplicate claim if both have active claims by different owners
         if (
             local_task.status in (TaskStatus.CLAIMED, TaskStatus.IN_PROGRESS)
@@ -399,9 +397,18 @@ class AssignmentManager:
             and local_task.owner_id != inc_owner
         ):
             self.duplicate_claims_detected += 1
+            if not self.use_conflict_resolution and local_state.current_task_id == local_task.task_id:
+                # Without conflict resolution, local owner ignores competing claim and keeps flying
+                return False, False
 
-        wins = self._claim_wins(
-            inc_version, inc_owner, local_task.version, local_task.owner_id
+        # Stale version check: never overwrite newer version
+        if self.use_conflict_resolution and inc_version < local_task.version:
+            return False, False
+
+        wins = (
+            self._claim_wins(inc_version, inc_owner, local_task.version, local_task.owner_id)
+            if self.use_conflict_resolution
+            else (local_task.owner_id is None)
         )
         if not wins:
             return False, False

@@ -128,47 +128,61 @@ function makeSmallTownGroundTexture(): THREE.CanvasTexture {
 function updateDroneLabelCanvas(
   canvas: HTMLCanvasElement,
   d: DroneState,
-  isSelected: boolean
+  isSelected: boolean,
+  isExpiryFlashing = false
 ): void {
   const ctx = canvas.getContext('2d')!;
   const w = canvas.width;
   const h = canvas.height;
   ctx.clearRect(0, 0, w, h);
 
-  ctx.fillStyle = !d.alive
+  ctx.fillStyle = isExpiryFlashing
+    ? 'rgba(153, 27, 27, 0.96)'
+    : !d.alive
     ? 'rgba(127, 29, 29, 0.94)'
     : isSelected
-    ? 'rgba(15, 23, 42, 0.96)'
-    : 'rgba(15, 23, 42, 0.88)';
-  ctx.strokeStyle = !d.alive
-    ? '#f43f5e'
+    ? 'rgba(11, 18, 32, 0.96)'
+    : 'rgba(17, 29, 49, 0.90)';
+  ctx.strokeStyle = isExpiryFlashing
+    ? '#F87171'
+    : !d.alive
+    ? '#F87171'
     : isSelected
-    ? '#38bdf8'
+    ? '#22D3EE'
     : 'rgba(148, 163, 184, 0.55)';
-  ctx.lineWidth = isSelected ? 3 : 2;
+  ctx.lineWidth = isSelected || isExpiryFlashing ? 3 : 2;
 
   ctx.beginPath();
   ctx.roundRect(4, 4, w - 8, h - 8, 10);
   ctx.fill();
   ctx.stroke();
 
-  ctx.font = 'bold 20px "IBM Plex Mono", monospace';
-  ctx.fillStyle = !d.alive ? '#fecdd3' : '#38bdf8';
-  ctx.fillText(`D${d.id} [AUTONOMOUS]`, 16, 30);
+  ctx.font = 'bold 19px "IBM Plex Mono", monospace';
+  ctx.fillStyle = !d.alive ? '#FECDD3' : '#22D3EE';
+  ctx.fillText(`D${d.id} [P2P NODE]`, 14, 28);
 
-  ctx.fillStyle = '#34d399';
-  ctx.font = 'bold 18px "IBM Plex Mono", monospace';
+  ctx.fillStyle = '#A3E635';
+  ctx.font = 'bold 17px "IBM Plex Mono", monospace';
   ctx.textAlign = 'right';
-  ctx.fillText(`DROPPED: ${d.ordersDropped}`, w - 16, 30);
+  ctx.fillText(`DROPPED:${d.ordersDropped}`, w - 14, 28);
 
   ctx.textAlign = 'left';
-  ctx.font = '600 16px "IBM Plex Mono", monospace';
-  ctx.fillStyle = '#f8fafc';
+  ctx.font = '600 15px "IBM Plex Mono", monospace';
+  ctx.fillStyle = '#F8FAFC';
   const summary =
     d.autonomousDecision.length > 36
       ? d.autonomousDecision.slice(0, 35) + '…'
       : d.autonomousDecision;
-  ctx.fillText(summary, 16, 56);
+  ctx.fillText(summary, 14, 52);
+
+  // Shrinking Lease Progress Bar along bottom of 3D badge
+  if (d.alive && d.leaseProgress > 0) {
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+    ctx.fillRect(14, h - 14, w - 28, 6);
+    ctx.fillStyle =
+      d.leaseProgress < 0.25 ? '#F87171' : d.leaseProgress < 0.5 ? '#F59E0B' : '#A3E635';
+    ctx.fillRect(14, h - 14, (w - 28) * Math.max(0.04, d.leaseProgress), 6);
+  }
 }
 
 /**
@@ -454,6 +468,8 @@ export const DroneArena3D: React.FC<DroneArena3DProps> = ({
   const [spawnArmed, setSpawnArmed] = useState<boolean>(false);
   const [pendingPickup, setPendingPickup] = useState<[number, number] | null>(null);
   const [controlsCollapsed, setControlsCollapsed] = useState<boolean>(false);
+  const [fps, setFps] = useState<number>(60);
+  const [qualityScaled, setQualityScaled] = useState<boolean>(false);
 
   const selectedDroneIdRef = useRef<number>(selectedDroneId);
   selectedDroneIdRef.current = selectedDroneId;
@@ -504,10 +520,12 @@ export const DroneArena3D: React.FC<DroneArena3DProps> = ({
       ? String(probeGl?.getParameter(dbgInfo.UNMASKED_RENDERER_WEBGL) || '')
       : '';
     const isSoftwareGl = /SwiftShader|llvmpipe|softpipe|Software|Basic Render/i.test(gpuRenderer);
+    setQualityScaled(isSoftwareGl);
 
     const renderer = new THREE.WebGLRenderer({
       antialias: !isSoftwareGl,
       powerPreference: 'high-performance',
+      preserveDrawingBuffer: true,
     });
     renderer.setPixelRatio(isSoftwareGl ? 1 : Math.min(window.devicePixelRatio, 2));
     renderer.setSize(width, height);
@@ -1176,10 +1194,19 @@ export const DroneArena3D: React.FC<DroneArena3DProps> = ({
     };
 
     let lastTime = performance.now();
+    let frameCounter = 0;
+    let fpsAccumTime = performance.now();
 
     const tick = () => {
       if (disposed) return;
       const now = performance.now();
+      frameCounter += 1;
+      if (now - fpsAccumTime >= 600) {
+        const measuredFps = Math.max(8, Math.min(60, Math.round((frameCounter * 1000) / (now - fpsAccumTime))));
+        setFps(measuredFps);
+        frameCounter = 0;
+        fpsAccumTime = now;
+      }
       const dt = Math.min((now - lastTime) / 1000, 0.1);
       lastTime = now;
 
@@ -1256,13 +1283,28 @@ export const DroneArena3D: React.FC<DroneArena3DProps> = ({
         }
 
         const isSel = d.id === selectedDroneIdRef.current;
-        rig.selectionRing.visible = isSel;
+        const isFlashing = sim.currentTime < d.leaseExpiredFlashUntil;
+        rig.selectionRing.visible = isSel || isFlashing || d.leaseProgress > 0;
+        const ringMat = rig.selectionRing.material as THREE.MeshBasicMaterial;
+        if (isFlashing) {
+          ringMat.color.setHex(0xf87171);
+          rig.selectionRing.scale.setScalar(1.15);
+        } else if (d.alive && d.leaseProgress > 0) {
+          ringMat.color.setHex(
+            d.leaseProgress < 0.25 ? 0xf87171 : d.leaseProgress < 0.5 ? 0xf59e0b : 0xa3e635
+          );
+          rig.selectionRing.scale.setScalar(0.55 + 0.55 * d.leaseProgress);
+        } else {
+          ringMat.color.setHex(0x22d3ee);
+          rig.selectionRing.scale.setScalar(1.0);
+        }
 
         // Update floating 3D autonomous decision badge if changed
-        const labelKey = `${d.alive}-${isSel}-${d.ordersDropped}-${d.autonomousDecision}`;
+        const leaseBucket = Math.round(d.leaseProgress * 10);
+        const labelKey = `${d.alive}-${isSel}-${isFlashing}-${leaseBucket}-${d.ordersDropped}-${d.autonomousDecision}`;
         if (rig.lastLabelKey !== labelKey) {
           rig.lastLabelKey = labelKey;
-          updateDroneLabelCanvas(rig.labelCanvas, d, isSel);
+          updateDroneLabelCanvas(rig.labelCanvas, d, isSel, isFlashing);
           rig.labelTexture.needsUpdate = true;
         }
 
@@ -1503,19 +1545,37 @@ export const DroneArena3D: React.FC<DroneArena3DProps> = ({
           )}
         </div>
 
-        <div className="flex items-center gap-3 text-[11px] font-mono text-slate-400">
-          <span>Drag: Orbit</span>
-          <span>·</span>
-          <span>Scroll: Zoom</span>
-          <span>·</span>
-          <span>Click Drone: Inspect</span>
+        <div className="flex items-center gap-2 text-[11px] font-mono text-slate-300">
+          <span
+            data-testid="fps-badge"
+            className="px-2 py-0.5 rounded bg-[#0B1220] border border-cyan-500/30 text-cyan-300 font-semibold"
+          >
+            {fps} FPS {qualityScaled ? '· Auto-Scaled' : ''}
+          </span>
+          <span className="hidden sm:inline text-slate-400">Drag: Orbit · Scroll: Zoom · Click Drone: Inspect</span>
         </div>
+      </div>
+
+      {/* Floating Mini-Legend in Top-Left of 3D Viewport */}
+      <div className="absolute top-12 left-3 z-10 pointer-events-none flex flex-wrap items-center gap-2.5 px-2.5 py-1.5 rounded bg-[#0B1220]/85 border border-slate-700/80 text-[10px] font-mono text-slate-200 backdrop-blur-sm">
+        <span className="flex items-center gap-1">
+          <span className="w-2 h-2 rounded-full bg-[#10B981]" /> Carrying
+        </span>
+        <span className="flex items-center gap-1">
+          <span className="w-2 h-2 rounded-full border-2 border-[#A3E635]" /> Shrinking Lease Ring
+        </span>
+        <span className="flex items-center gap-1">
+          <span className="w-2 h-2 rounded bg-[#F59E0B]" /> Pickup Crate
+        </span>
+        <span className="flex items-center gap-1">
+          <span className="w-2 h-2 rounded-full bg-[#F87171]" /> Failed / Lease Expired
+        </span>
       </div>
 
       {/* Dedicated Three.js Canvas Mount Container */}
       <div
         ref={mountRef}
-        className="w-full h-[540px] cursor-grab active:cursor-grabbing relative"
+        className="w-full h-[500px] cursor-grab active:cursor-grabbing relative"
         aria-label="3D Autonomous Drone Swarm Small Town Simulation Canvas"
       />
 

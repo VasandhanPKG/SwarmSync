@@ -5,6 +5,8 @@
  * avoidance, and 4 baseline modes) for deterministic real-time browser visualization.
  */
 
+import canonicalParams from '../../configs/params.json';
+
 export type MessageType =
   | 'TASK_ANNOUNCE'
   | 'BID'
@@ -30,6 +32,34 @@ export type TaskStatus =
   | 'COMPLETED';
 
 export type CoordinationMode = 'swarmsync' | 'centralized' | 'basic_auction' | 'cbba';
+
+export interface TimelineEvent {
+  id: string;
+  time: number;
+  type:
+    | 'DRONE_FAILURE'
+    | 'DRONE_REVIVED'
+    | 'LEASE_EXPIRED'
+    | 'TASK_REBID'
+    | 'RECONCILIATION'
+    | 'PARTITION_TOGGLE'
+    | 'HUB_FAILURE'
+    | 'ORDER_DROPPED'
+    | 'CONFLICT_RESOLVED'
+    | 'TASK_SPAWNED';
+  droneId?: number;
+  taskId?: string;
+  description: string;
+}
+
+export interface MetricsHistoryPoint {
+  time: number;
+  completedCount: number;
+  openCount: number;
+  messagesPerDelivery: number;
+  duplicateClaims: number;
+  avgRecoveryS: number;
+}
 
 export interface ForumMessage {
   message_id: string;
@@ -64,6 +94,7 @@ export interface DeliveryTask {
   picked_up: boolean;
   completed_at: number | null;
   completed_by: number | null;
+  last_expired_at?: number;
 }
 
 export interface HazardZone {
@@ -163,7 +194,7 @@ export class CommunicationManager {
     currentTime: number,
     taskId: string | null,
     payload: Record<string, unknown>,
-    ttl = 16.0
+    ttl = canonicalParams.network.message_ttl_s || 16.0
   ): ForumMessage {
     this.sequenceNumber += 1;
     const msgId = `M-${String(this.agentId).padStart(2, '0')}-${String(this.sequenceNumber).padStart(4, '0')}`;
@@ -179,7 +210,7 @@ export class CommunicationManager {
       timestamp: currentTime,
       expiry_time: currentTime + ttl,
       hop_count: 0,
-      max_hops: 3,
+      max_hops: canonicalParams.network.gossip_hop_limit || 3,
       byte_size: 48 + msgId.length + type.length + rawLen,
       payload,
     };
@@ -212,10 +243,10 @@ export class CommunicationManager {
 // 6. SafetyMonitor
 // ============================================================================
 export class SafetyMonitor {
-  maxPayload = 3.5;
-  batteryReserve = 15.0;
-  energyPerMeter = 0.016;
-  droneSpeed = 42.0;
+  maxPayload = canonicalParams.drone.max_payload_kg || 3.5;
+  batteryReserve = canonicalParams.drone.reserve_battery_pct || 18.0;
+  energyPerMeter = canonicalParams.drone.energy_per_meter_pct || 0.015;
+  droneSpeed = canonicalParams.drone.speed_mps || 35.0;
   basePos: [number, number] = [500, 500];
   safetyInterventions = 0;
   safetyViolations = 0;
@@ -264,9 +295,9 @@ export class SafetyMonitor {
 export class TaskNegotiationEngine {
   readonly agentId: number;
   readonly safety: SafetyMonitor;
-  w_t = 0.5;
-  w_e = 0.3;
-  w_r = 0.2;
+  w_t = canonicalParams.auction_weights.w_t ?? 0.5;
+  w_e = canonicalParams.auction_weights.w_e ?? 0.3;
+  w_r = canonicalParams.auction_weights.w_r ?? 0.2;
 
   constructor(agentId: number, safety: SafetyMonitor) {
     this.agentId = agentId;
@@ -316,17 +347,19 @@ export class TaskNegotiationEngine {
 // ============================================================================
 export class AssignmentManager {
   readonly agentId: number;
-  leaseDuration = 8.0;
-  renewInterval = 2.5;
-  auctionWindow = 0.8;
+  leaseDuration = canonicalParams.protocol.lease_duration_s ?? 6.0;
+  renewInterval = canonicalParams.protocol.renew_interval_s ?? 2.0;
+  auctionWindow = canonicalParams.protocol.auction_window_s ?? 1.2;
   useLeases: boolean;
+  useConflictResolution: boolean;
   lastRenewSentAt = -999;
   conflictsResolved = 0;
   duplicateClaimsDetected = 0;
 
-  constructor(agentId: number, useLeases = true) {
+  constructor(agentId: number, useLeases = true, useConflictResolution = true) {
     this.agentId = agentId;
     this.useLeases = useLeases;
+    this.useConflictResolution = useConflictResolution;
   }
 
   static claimWins(
@@ -348,7 +381,6 @@ export class AssignmentManager {
     localState: LocalStateManager
   ): { changed: boolean; preempted: boolean } {
     if (localTask.status === 'COMPLETED') return { changed: false, preempted: false };
-    if (incVersion < localTask.version) return { changed: false, preempted: false };
 
     if (
       (localTask.status === 'CLAIMED' || localTask.status === 'IN_PROGRESS') &&
@@ -356,14 +388,23 @@ export class AssignmentManager {
       localTask.owner_id !== incOwner
     ) {
       this.duplicateClaimsDetected += 1;
+      if (!this.useConflictResolution && localState.currentTaskId === localTask.task_id) {
+        return { changed: false, preempted: false };
+      }
     }
 
-    const wins = AssignmentManager.claimWins(
-      incVersion,
-      incOwner,
-      localTask.version,
-      localTask.owner_id
-    );
+    if (this.useConflictResolution && incVersion < localTask.version) {
+      return { changed: false, preempted: false };
+    }
+
+    const wins = this.useConflictResolution
+      ? AssignmentManager.claimWins(
+          incVersion,
+          incOwner,
+          localTask.version,
+          localTask.owner_id
+        )
+      : localTask.owner_id === null;
     if (!wins) return { changed: false, preempted: false };
 
     const preempted =
@@ -392,7 +433,7 @@ export class AssignmentManager {
 // ============================================================================
 export class RecoveryManager {
   readonly agentId: number;
-  gracePeriod = 3.0;
+  gracePeriod = canonicalParams.protocol.grace_period_s ?? 2.5;
   useLeases: boolean;
   tasksReleasedCount = 0;
   reconciliationsCompleted = 0;
@@ -415,6 +456,7 @@ export class RecoveryManager {
           task.best_bid = -1e9;
           task.best_bidder = null;
           task.auction_opened_at = currentTime;
+          task.last_expired_at = currentTime;
           this.tasksReleasedCount += 1;
           released.push(task);
         }
@@ -501,6 +543,8 @@ export interface DroneState {
   lastDropTime: number;
   lastDropTaskId: string | null;
   autonomousDecision: string;
+  leaseProgress: number; // 0..1 (1 = fresh lease, 0 = expired)
+  leaseExpiredFlashUntil: number;
   localState: LocalStateManager;
   comm: CommunicationManager;
   safety: SafetyMonitor;
@@ -536,14 +580,15 @@ export class SwarmSyncSimulator {
   mode: CoordinationMode;
   scenario: string;
   currentTime = 0;
-  dt = 0.2;
-  commRange = 680;
-  packetLossProb = 0.0;
+  dt = canonicalParams.world.dt_s ?? 0.2;
+  commRange = canonicalParams.network.comm_range_m ?? 620;
+  packetLossProb = canonicalParams.network.packet_loss_prob ?? 0.0;
   minDelay = 0.05;
-  maxDelay = 0.22;
+  maxDelay = canonicalParams.network.base_delay_s + canonicalParams.network.delay_jitter_s || 0.2;
   partitionEnabled = false;
-  partitionX = 500;
+  partitionX = canonicalParams.network.partition_split_x_m ?? 500;
   centralHubAlive = true;
+  arrivalInterval = 3.2;
 
   drones: Map<number, DroneState> = new Map();
   masterTasks: Map<string, DeliveryTask> = new Map();
@@ -552,14 +597,18 @@ export class SwarmSyncSimulator {
   inFlightPackets: InFlightVisualPacket[] = [];
   activeDrops: OrderDropEvent[] = [];
   recentForumLog: ForumMessage[] = [];
+  eventTimeline: TimelineEvent[] = [];
+  metricsHistory: MetricsHistoryPoint[] = [];
   previousNeighbors: Map<number, Set<number>> = new Map();
 
   totalMessagesSent = 0;
   totalBytesSent = 0;
   totalPacketsDropped = 0;
   rvoAvoidanceCount = 0;
+  duplicateClaimsCount = 0;
   taskFailureTimes: Map<string, number> = new Map();
   recoveryDurations: number[] = [];
+  private lastHistorySampleTime = -1;
 
   constructor(
     scenario = 'normal',
@@ -617,6 +666,8 @@ export class SwarmSyncSimulator {
           mode === 'centralized'
             ? 'Awaiting Central Hub dispatch'
             : 'Autonomous P2P node ready · Scanning tasks',
+        leaseProgress: 0,
+        leaseExpiredFlashUntil: -1,
         localState: new LocalStateManager(i),
         comm: new CommunicationManager(i, periodic),
         safety,
@@ -732,6 +783,37 @@ export class SwarmSyncSimulator {
     }
   }
 
+  recordTimelineEvent(
+    type: TimelineEvent['type'],
+    description: string,
+    droneId?: number,
+    taskId?: string
+  ): void {
+    this.eventTimeline.unshift({
+      id: `EV-${this.currentTime.toFixed(2)}-${this.eventTimeline.length + 1}`,
+      time: Number(this.currentTime.toFixed(2)),
+      type,
+      droneId,
+      taskId,
+      description,
+    });
+    if (this.eventTimeline.length > 100) {
+      this.eventTimeline.pop();
+    }
+  }
+
+  setPartition(enabled: boolean): void {
+    if (this.partitionEnabled !== enabled) {
+      this.partitionEnabled = enabled;
+      this.recordTimelineEvent(
+        'PARTITION_TOGGLE',
+        enabled
+          ? `Network partition injected across X=${this.partitionX}m (East/West isolated)`
+          : 'Network partition healed; peer digest reconciliation triggered'
+      );
+    }
+  }
+
   killDrone(droneId: number): string | null {
     const d = this.drones.get(droneId);
     if (!d || !d.alive) return null;
@@ -741,12 +823,21 @@ export class SwarmSyncSimulator {
     d.altitude = 0.6;
     d.pitch = 0.35;
     d.roll = -0.28;
+    d.leaseProgress = 0;
     d.autonomousDecision = orphaned
       ? `NODE FAILED MID-DELIVERY (${orphaned} lease expiring)`
       : 'NODE FAILED · OFFLINE';
     if (orphaned) {
       this.taskFailureTimes.set(orphaned, this.currentTime);
     }
+    this.recordTimelineEvent(
+      'DRONE_FAILURE',
+      orphaned
+        ? `Drone D${droneId} failed mid-delivery while carrying ${orphaned}; lease countdown active`
+        : `Drone D${droneId} failed at (${Math.round(d.position[0])}, ${Math.round(d.position[1])})`,
+      droneId,
+      orphaned || undefined
+    );
     return orphaned;
   }
 
@@ -760,6 +851,11 @@ export class SwarmSyncSimulator {
     d.roll = 0;
     d.localState.currentTaskId = null;
     d.autonomousDecision = 'Rejoined P2P mesh · Negotiating tasks';
+    this.recordTimelineEvent(
+      'DRONE_REVIVED',
+      `Drone D${droneId} restored to active P2P mesh`,
+      droneId
+    );
   }
 
   spawnCustomTask(pickup: [number, number], dropoff: [number, number], payload = 1.8): DeliveryTask {
@@ -785,6 +881,12 @@ export class SwarmSyncSimulator {
     };
     this.spawnSchedule.push(task);
     this.masterTasks.set(tid, cloneTask(task));
+    this.recordTimelineEvent(
+      'TASK_SPAWNED',
+      `Task ${tid} (${payload}kg) injected at (${pickup[0]}, ${pickup[1]}) → (${dropoff[0]}, ${dropoff[1]})`,
+      undefined,
+      tid
+    );
     return task;
   }
 
@@ -840,7 +942,7 @@ export class SwarmSyncSimulator {
     // Scenario-based automated events for partition / drone_failure / hub_failure
     if (this.scenario === 'partition') {
       if (Math.abs(this.currentTime - 38.0) < this.dt * 0.6) {
-        this.partitionEnabled = false;
+        this.setPartition(false);
       }
     } else if (this.scenario === 'drone_failure' && Math.abs(this.currentTime - 12.0) < this.dt * 0.6) {
       const busy = Array.from(this.drones.values()).find(
@@ -848,7 +950,10 @@ export class SwarmSyncSimulator {
       );
       if (busy) this.killDrone(busy.id);
     } else if (this.scenario === 'hub_failure' && Math.abs(this.currentTime - 14.0) < this.dt * 0.6) {
-      this.centralHubAlive = false;
+      if (this.centralHubAlive) {
+        this.centralHubAlive = false;
+        this.recordTimelineEvent('HUB_FAILURE', 'Central coordinator hub failed at (500, 500)');
+      }
     }
 
     // 1. TaskSource: inject due tasks ONLY to nearest reachable alive drone
@@ -919,20 +1024,75 @@ export class SwarmSyncSimulator {
       }
     }
 
-    // 4. Step kinematics with RVO local collision avoidance
+    // 4. Step kinematics with RVO local collision avoidance & lease progress updates
+    const activeOwnersByTask: Map<string, number[]> = new Map();
     for (const d of this.drones.values()) {
-      if (!d.alive) continue;
+      if (!d.alive) {
+        d.leaseProgress = 0;
+        continue;
+      }
       this.stepDroneKinematics(d);
+      if (d.localState.currentTaskId) {
+        const tid = d.localState.currentTaskId;
+        const list = activeOwnersByTask.get(tid) || [];
+        list.push(d.id);
+        activeOwnersByTask.set(tid, list);
+        const lt = d.localState.knownTasks.get(tid);
+        if (lt && d.assignment.useLeases) {
+          const rem = Math.max(0, lt.lease_expiry - this.currentTime);
+          d.leaseProgress = Math.max(0, Math.min(1, rem / d.assignment.leaseDuration));
+        } else {
+          d.leaseProgress = 1;
+        }
+      } else {
+        d.leaseProgress = 0;
+      }
     }
 
-    // 5. Track recovery latency
+    for (const owners of activeOwnersByTask.values()) {
+      if (owners.length > 1) {
+        this.duplicateClaimsCount += 1;
+      }
+    }
+
+    // 5. Track recovery latency (failure_injected_to_valid_reassignment_committed_s)
     for (const d of this.drones.values()) {
       if (d.alive && d.localState.currentTaskId) {
         const failT = this.taskFailureTimes.get(d.localState.currentTaskId);
         if (failT !== undefined) {
-          this.recoveryDurations.push(Math.max(0.2, this.currentTime - failT));
+          const recDur = Number(Math.max(0.2, this.currentTime - failT).toFixed(2));
+          this.recoveryDurations.push(recDur);
           this.taskFailureTimes.delete(d.localState.currentTaskId);
+          this.recordTimelineEvent(
+            'TASK_REBID',
+            `Orphaned task ${d.localState.currentTaskId} reassigned to D${d.id} after ${recDur}s recovery`,
+            d.id,
+            d.localState.currentTaskId
+          );
         }
+      }
+    }
+
+    // 6. Sample live metrics history every 1.0s for Bottom Dock charts
+    if (this.currentTime - this.lastHistorySampleTime >= 1.0 - 1e-5) {
+      this.lastHistorySampleTime = this.currentTime;
+      const tasks = this.getConsolidatedTasks();
+      const comp = tasks.filter((t) => t.status === 'COMPLETED').length;
+      const open = tasks.length - comp;
+      const avgRec =
+        this.recoveryDurations.length > 0
+          ? this.recoveryDurations.reduce((a, b) => a + b, 0) / this.recoveryDurations.length
+          : 0;
+      this.metricsHistory.push({
+        time: Number(this.currentTime.toFixed(1)),
+        completedCount: comp,
+        openCount: open,
+        messagesPerDelivery: Number((this.totalMessagesSent / Math.max(comp, 1)).toFixed(1)),
+        duplicateClaims: this.duplicateClaimsCount,
+        avgRecoveryS: Number(avgRec.toFixed(2)),
+      });
+      if (this.metricsHistory.length > 60) {
+        this.metricsHistory.shift();
       }
     }
 
@@ -1051,14 +1211,22 @@ export class SwarmSyncSimulator {
         if (lt) {
           const incOwner = Number(p.owner_id ?? msg.sender_id);
           const incVer = Number(p.version ?? 1);
-          const incExpiry = Number(p.lease_expiry ?? this.currentTime + 8);
-          const { changed } = d.assignment.resolveIncomingClaim(
+          const incExpiry = Number(p.lease_expiry ?? this.currentTime + d.assignment.leaseDuration);
+          const { changed, preempted } = d.assignment.resolveIncomingClaim(
             lt,
             incOwner,
             incVer,
             incExpiry,
             d.localState
           );
+          if (preempted) {
+            this.recordTimelineEvent(
+              'CONFLICT_RESOLVED',
+              `D${d.id} yielded ${msg.task_id} to D${incOwner} (v${incVer}) via deterministic conflict resolution`,
+              d.id,
+              msg.task_id
+            );
+          }
           if (p.picked_up) lt.picked_up = true;
           for (const ot of d.localState.knownTasks.values()) {
             if (
@@ -1099,6 +1267,11 @@ export class SwarmSyncSimulator {
           this.broadcast(d.id, reply);
         }
         if (updates > 0) {
+          this.recordTimelineEvent(
+            'RECONCILIATION',
+            `D${d.id} reconciled ${updates} task state(s) from peer digest`,
+            d.id
+          );
           for (const t of d.localState.knownTasks.values()) {
             if (t.status === 'ANNOUNCED' || t.status === 'BIDDING' || t.status === 'RELEASED') {
               this.evaluateAndBid(d, t);
@@ -1121,6 +1294,13 @@ export class SwarmSyncSimulator {
     // Check expired leases
     const released = d.recovery.checkExpiredLeases(d.localState, this.currentTime);
     for (const rt of released) {
+      d.leaseExpiredFlashUntil = this.currentTime + 2.5;
+      this.recordTimelineEvent(
+        'LEASE_EXPIRED',
+        `D${d.id} detected expired lease + ${d.recovery.gracePeriod}s grace on ${rt.task_id}; bumped to v${rt.version} for re-bid`,
+        d.id,
+        rt.task_id
+      );
       const msg = d.comm.createMessage('TASK_ANNOUNCE', this.currentTime, rt.task_id, {
         task: cloneTask(rt),
         released: true,
@@ -1370,6 +1550,12 @@ export class SwarmSyncSimulator {
         d.lastDropTime = this.currentTime;
         d.lastDropTaskId = active.task_id;
         d.autonomousDecision = `Dropped Order ${active.task_id} at Dropoff! Broadcasting DONE`;
+        this.recordTimelineEvent(
+          'ORDER_DROPPED',
+          `Drone D${d.id} dropped order ${active.task_id} (${active.payload}kg) at (${active.dropoff[0]}, ${active.dropoff[1]})`,
+          d.id,
+          active.task_id
+        );
 
         // Record 3D physical order drop event so 3D viewport animates the package dropping onto the pad
         this.activeDrops.push({
